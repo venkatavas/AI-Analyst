@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "rtgs-cli": {
+      "command": "python",
+      "args": ["mcp_server.py"],
+      "cwd": ".",
+      "env": {
+        "GROQ_API_KEY": "${GROQ_API_KEY}"
+      }
+    }
+  }
+}

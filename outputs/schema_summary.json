@@ -1,0 +1,28 @@
+{
+  "columns": [
+    {
+      "name": "activity",
+      "dtype": "object",
+      "non_null_count": 4,
+      "null_count": 0,
+      "unique_count": 4
+    },
+    {
+      "name": "2015_16",
+      "dtype": "int64",
+      "non_null_count": 4,
+      "null_count": 0,
+      "unique_count": 4
+    },
+    {
+      "name": "2016_17__upto_jan_17_",
+      "dtype": "int64",
+      "non_null_count": 4,
+      "null_count": 0,
+      "unique_count": 4
+    }
+  ],
+  "total_columns": 3,
+  "total_rows": 4,
+  "geographic_context": []
+}
