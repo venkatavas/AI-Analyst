@@ -1,6 +1,6 @@
 ## 🎬 Demo Video
 
-[🎥 Watch 2-minute demo](https://drive.google.com/file/d/1EKN5gNk23aHWbroDuWQn9n8I7mXdUm01/view?usp=drivesdk) - See the complete pipeline in action
+[🎥 Watch 2-minute demo](https://drive.google.com/file/d/133J2FJHBIn4Cn56Kdl9lOTDmdV62KpCx/view?usp=sharing) - See the complete pipeline in action
 
 
 # 🏛️ RTGS CLI - Real-Time Governance System
