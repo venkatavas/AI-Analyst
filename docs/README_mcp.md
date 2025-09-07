@@ -1,27 +1,31 @@
-# MCP Server Integration
+# 🔌 MCP Server Integration
 
 ## Overview
 
-The RTGS CLI includes a Model Context Protocol (MCP) server that exposes the data processing pipeline as resources and tools for AI system integration. This enables other AI applications to access and utilize the governance data processing capabilities.
+The RTGS CLI includes a **production-ready Model Context Protocol (MCP) server** that exposes the complete data processing pipeline as resources and tools for AI system integration. This enables external AI applications to access governance data processing capabilities with dual-API AI insights and ML analytics.
 
-## MCP Server Features
+## 🚀 Production MCP Features
 
 ### Resources
 The MCP server exposes the following resources:
 
-- **Output Files**: All generated reports, schemas, and visualizations
-- **Processed Data**: Standardized, cleaned, and transformed datasets
-- **Pipeline Status**: Real-time status of the processing pipeline
+- **AI-Enhanced Reports**: Dual-API insights (Groq + HuggingFace)
+- **ML Analytics**: Clustering and anomaly detection results
+- **Processed Datasets**: Complete pipeline outputs (standardized, cleaned, transformed)
+- **Visualizations**: Interactive charts and text-based fallbacks
+- **Pipeline Status**: Real-time processing status and health checks
 
 ### Tools
 Available tools through the MCP interface:
 
-1. **rtgs_ingest** - Ingest and standardize CSV datasets
-2. **rtgs_clean** - Clean data (remove duplicates, handle missing values)
-3. **rtgs_transform** - Transform data (aggregations, rankings, percentages)
-4. **rtgs_insights** - Generate policy insights with AI analysis
-5. **rtgs_pipeline** - Run complete pipeline end-to-end
-6. **rtgs_query_data** - Natural language queries on processed data
+1. **rtgs_ingest** - Ingest and standardize CSV datasets (687 records capability)
+2. **rtgs_clean** - Advanced data cleaning with quality reporting
+3. **rtgs_transform** - Statistical transformation and feature engineering
+4. **rtgs_insights** - Dual-API AI analysis (Groq narrative + HuggingFace math)
+5. **rtgs_cluster** - SimpleMlAgent k-means clustering (5 clusters)
+6. **rtgs_anomalies** - IQR-based statistical outlier detection
+7. **rtgs_pipeline** - Complete end-to-end pipeline execution
+8. **rtgs_query_data** - Natural language queries on governance data
 
 ## Setup and Configuration
 

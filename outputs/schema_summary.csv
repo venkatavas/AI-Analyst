@@ -1,4 +1,7 @@
-column_name,data_type,non_null_count,null_count,unique_count,range_or_values,unit_type
-activity,object,4,0,4,4 unique values,categorical
-2015_16,int64,4,0,4,298 - 43496,numeric
-2016_17__upto_jan_17_,int64,4,0,4,527 - 45229,numeric
+column,dtype,non_null,null_count,unique_count
+district_,object,687,0,1
+mandal,object,687,0,43
+gp,object,687,0,630
+female,int64,687,0,503
+male,float64,686,1,447
+transgender,float64,492,195,14

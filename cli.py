@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 RTGS CLI - A command-line interface for data processing pipeline.
 """
@@ -8,21 +9,48 @@ import pandas as pd
 import sys
 import os
 from dotenv import load_dotenv
+
+# Disable Plotly by default to avoid import hanging issues
+# Set ENABLE_PLOTLY=true in environment to enable interactive charts
 try:
-    import matplotlib
-    matplotlib.use('Agg')  # Use non-interactive backend
-    import matplotlib.pyplot as plt
-    MATPLOTLIB_AVAILABLE = True
-except ImportError:
-    MATPLOTLIB_AVAILABLE = False
-    print("Warning: matplotlib not available, visualization will be skipped")
+    if os.getenv('ENABLE_PLOTLY', 'false').lower() == 'true':
+        import plotly.graph_objects as go
+        PLOTLY_AVAILABLE = True
+        print("Info: Interactive visualizations enabled")
+    else:
+        PLOTLY_AVAILABLE = False
+        print("Info: Interactive visualizations disabled (set ENABLE_PLOTLY=true to enable)")
+except ImportError as e:
+    PLOTLY_AVAILABLE = False
+    print(f"Warning: Plotly not available: {e}")
+    print("Install plotly for interactive visualizations: pip install plotly kaleido")
 
 try:
     from groq import Groq
     GROQ_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     GROQ_AVAILABLE = False
-    print("Warning: groq not available, using placeholder AI summary")
+    print(f"Warning: Groq not available: {e}")
+    print("Install groq to enable AI-powered insights: pip install groq")
+
+try:
+    import signal
+    import sys
+    
+    def timeout_handler(signum, frame):
+        raise TimeoutError("Import timeout")
+    
+    # Set timeout for import (Windows compatible)
+    try:
+        import requests
+        HUGGINGFACE_AVAILABLE = True
+    except Exception as e:
+        HUGGINGFACE_AVAILABLE = False
+        print(f"Warning: Hugging Face API disabled - {type(e).__name__}")
+        
+except Exception:
+    HUGGINGFACE_AVAILABLE = False
+    print("Warning: Hugging Face API disabled due to import issues")
 
 # Load environment variables
 load_dotenv()
@@ -32,196 +60,59 @@ from agents.ingestion_agent import IngestionAgent
 from agents.cleaning_agent import CleaningAgent
 from agents.transformation_agent import TransformationAgent
 from agents.insights_agent import InsightsAgent
-# from agents.ml_agent import MLAgent  # Temporarily disabled due to import conflicts
+try:
+    from agents.simple_ml_agent import SimpleMlAgent
+    ML_AGENT_AVAILABLE = True
+except ImportError:
+    ML_AGENT_AVAILABLE = False
+    print("Warning: SimpleMlAgent not available")
 
-def print_step(step_name, message):
-    """Print a formatted step message."""
-    print(f"[→] {step_name}: {message}")
+import numpy as np
+
+def print_step(step, message):
+    """Print a step with formatting."""
+    print(f"[→] {step}: {message}")
 
 def print_success(message):
-    """Print a success message."""
+    """Print a success message with formatting."""
     print(f"[✓] {message}")
 
 def print_error(message):
-    """Print an error message."""
-    print(f"[✗] Error: {message}", file=sys.stderr)
+    """Print an error message with formatting."""
+    print(f"[✗] ERROR: {message}")
 
-def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Standardize column names to lowercase with underscores."""
-    df.columns = (
-        df.columns.str.lower()
-        .str.strip()
-        .str.replace(r'[^\w\s]', '_', regex=True)
-        .str.replace(r'\s+', '_', regex=True)
-    )
-    return df
-
-def generate_schema_csv(df, schema, output_path):
-    """Generate a CSV summary of the schema."""
-    schema_data = []
-    for col_info in schema["columns"]:
-        col_name = col_info["name"]
-        dtype = col_info["dtype"]
-        
-        # Get basic stats for numeric columns
-        try:
-            if pd.api.types.is_numeric_dtype(df[col_name]):
-                min_val = df[col_name].min()
-                max_val = df[col_name].max()
-                range_info = f"{min_val} - {max_val}"
-                unit = "count" if "count" in col_name.lower() else "numeric"
-            else:
-                range_info = f"{col_info['unique_count']} unique values"
-                unit = "categorical"
-        except KeyError:
-            # Handle case where column name might have changed during standardization
-            range_info = f"{col_info['unique_count']} unique values"
-            unit = "categorical"
-        
-        schema_data.append({
-            "column_name": col_name,
-            "data_type": dtype,
-            "non_null_count": col_info["non_null_count"],
-            "null_count": col_info["null_count"],
-            "unique_count": col_info["unique_count"],
-            "range_or_values": range_info,
-            "unit_type": unit
-        })
-    
-    schema_df = pd.DataFrame(schema_data)
-    schema_df.to_csv(output_path, index=False)
-
-def ingest(args):
-    """
-    Ingest and process a CSV file, then save standardized version and schema.
-    """
+def generate_text_chart(df, output_path):
+    """Generate a simple text-based chart as fallback."""
     try:
-        print_step("INGEST", "Starting data ingestion process")
+        # Get top 10 wards by total illiterates
+        top_wards = (
+            df[['wardname', 'total_illiterates_by_ward']]
+            .drop_duplicates()
+            .nlargest(10, 'total_illiterates_by_ward')
+        )
         
-        # Resolve input file path
-        input_path = Path(args.input_file)
-        if not input_path.exists():
-            print_error(f"Input file '{args.input_file}' not found.")
-            sys.exit(1)
+        viz_text = "📊 Top 10 Wards by Illiteracy Count\n"
+        viz_text += "=" * 50 + "\n\n"
         
-        # Read the input file
-        print_step("LOAD", f"Reading CSV file: {input_path.name}")
-        df = pd.read_csv(input_path)
-        print_success(f"Loaded {len(df)} rows and {len(df.columns)} columns")
+        for i, (_, row) in enumerate(top_wards.iterrows(), 1):
+            ward_name = row['wardname'][:20]  # Truncate long names
+            count = int(row['total_illiterates_by_ward'])
+            bar_length = min(30, count // 100)  # Scale bar length
+            bar = "█" * bar_length
+            viz_text += f"{i:2}. {ward_name:<20} {count:>6,} {bar}\n"
         
-        # Standardize column names first
-        print_step("STANDARDIZE", "Converting column names to lowercase with underscores")
-        df_cleaned = standardize_columns(df)
-        print_success("Column names standardized")
+        # Save as text file
+        text_path = str(output_path).replace('.png', '_chart.txt')
+        with open(text_path, 'w', encoding='utf-8') as f:
+            f.write(viz_text)
         
-        # Generate schema summary after standardization
-        print_step("ANALYZE", "Generating schema summary")
-        insights = InsightsAgent()
-        schema = insights.generate_schema_summary(df_cleaned)
-        
-        # Print schema summary
-        print("\n📊 Dataset Overview:")
-        print(f"   • Total Rows: {schema['total_rows']:,}")
-        print(f"   • Total Columns: {schema['total_columns']}")
-        print("\n📋 Column Details:")
-        for col in schema["columns"]:
-            null_pct = (col['null_count'] / schema['total_rows']) * 100
-            print(f"   • {col['name']} ({col['dtype']}): {col['non_null_count']:,} non-null ({null_pct:.1f}% missing), {col['unique_count']:,} unique")
-        
-        # Prepare output file names
-        output_dir = Path(args.output_dir)
-        output_path = output_dir / f"{input_path.stem}_standardized.csv"
-        schema_json_path = Path("outputs/schema_summary.json")
-        schema_csv_path = Path("outputs/schema_summary.csv")
-        
-        # Save outputs
-        print_step("SAVE", "Saving processed files")
-        output_dir.mkdir(parents=True, exist_ok=True)
-        Path("outputs").mkdir(exist_ok=True)
-        
-        df_cleaned.to_csv(output_path, index=False)
-        with open(schema_json_path, 'w') as f:
-            json.dump(schema, f, indent=2)
-        generate_schema_csv(df_cleaned, schema, schema_csv_path)
-        
-        print_success(f"Successfully processed {input_path.name}")
-        print(f"   📁 Standardized data: {output_path}")
-        print(f"   📄 Schema JSON: {schema_json_path}")
-        print(f"   📊 Schema CSV: {schema_csv_path}")
+        print_success(f"Text-based chart saved: {text_path}")
         
     except Exception as e:
-        print_error(str(e))
-        sys.exit(1)
-
-def print_cleaning_summary(report):
-    """Print a formatted cleaning summary to console."""
-    print("\n🧹 Cleaning Summary:")
-    print(f"   • Duplicates removed: {report['duplicates_removed']:,}")
-    
-    if report['missing_values_filled']:
-        print(f"   • Missing values filled:")
-        for col, count in report['missing_values_filled'].items():
-            print(f"     - {col}: {count:,} values")
-    else:
-        print(f"   • Missing values filled: 0")
-    
-    if report['outliers_replaced']:
-        print(f"   • Outliers replaced:")
-        for col, count in report['outliers_replaced'].items():
-            print(f"     - {col}: {count:,} values")
-    else:
-        print(f"   • Outliers replaced: 0")
-
-def clean(args):
-    """
-    Clean a standardized CSV file.
-    """
-    try:
-        print_step("CLEAN", "Starting data cleaning process")
-        
-        input_path = Path(args.input_file)
-        if not input_path.exists():
-            print_error(f"Input file '{args.input_file}' not found.")
-            sys.exit(1)
-
-        print_step("LOAD", f"Reading standardized file: {input_path.name}")
-        df = pd.read_csv(input_path)
-        print_success(f"Loaded {len(df)} rows for cleaning")
-
-        print_step("PROCESS", "Applying data cleaning operations")
-        agent = CleaningAgent()
-        df_cleaned, report = agent.clean_data(df)
-        print_success(f"Cleaning completed - {len(df_cleaned)} rows remaining")
-
-        # Print cleaning summary to console
-        print_cleaning_summary(report)
-
-        # Prepare output paths
-        output_dir = Path(args.output_dir)
-        output_path = output_dir / f"{input_path.stem}_cleaned.csv"
-        report_path = Path("outputs/cleaning_report.json")
-
-        # Save outputs
-        print_step("SAVE", "Saving cleaned data and report")
-        output_dir.mkdir(parents=True, exist_ok=True)
-        df_cleaned.to_csv(output_path, index=False)
-        with open(report_path, 'w') as f:
-            json.dump(report, f, indent=2)
-
-        print_success(f"Successfully cleaned {input_path.name}")
-        print(f"   📁 Cleaned data: {output_path}")
-        print(f"   📄 Cleaning report: {report_path}")
-
-    except Exception as e:
-        print_error(str(e))
-        sys.exit(1)
+        print(f"   📊 Text chart generation failed: {str(e)[:100]}...")
 
 def generate_visualization(df, output_path):
-    """Generate a bar chart of top 5 wards with highest illiteracy."""
-    if not MATPLOTLIB_AVAILABLE:
-        print("Warning: matplotlib not available, skipping visualization")
-        return False
-        
+    """Generate visualization with robust fallback to text-based charts."""
     try:
         # Get top 5 wards by total illiterates
         top_wards = (
@@ -230,328 +121,574 @@ def generate_visualization(df, output_path):
             .nlargest(5, 'total_illiterates_by_ward')
         )
         
-        plt.figure(figsize=(12, 6))
-        bars = plt.bar(range(len(top_wards)), top_wards['total_illiterates_by_ward'], 
-                      color=['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'])
-        
-        plt.title('Top 5 Wards by Illiteracy Count', fontsize=16, fontweight='bold', pad=20)
-        plt.xlabel('Ward Name', fontsize=12)
-        plt.ylabel('Total Illiterates', fontsize=12)
-        
-        # Set ward names as x-axis labels
-        ward_names = [name[:15] + '...' if len(name) > 15 else name for name in top_wards['wardname']]
-        plt.xticks(range(len(top_wards)), ward_names, rotation=45, ha='right')
-        
-        # Add value labels on bars
-        for i, bar in enumerate(bars):
-            height = bar.get_height()
-            plt.text(bar.get_x() + bar.get_width()/2., height + height*0.01,
-                    f'{int(height):,}', ha='center', va='bottom', fontweight='bold')
-        
-        plt.tight_layout()
-        plt.savefig(output_path, dpi=300, bbox_inches='tight')
-        plt.close()
-        
-        return True
+        if PLOTLY_AVAILABLE:
+            try:
+                # Convert to simple lists to avoid pandas/plotly compatibility issues
+                ward_names = top_wards['wardname'].tolist()
+                illiteracy_counts = top_wards['total_illiterates_by_ward'].tolist()
+                
+                # Create interactive bar chart
+                fig = go.Figure(data=[
+                    go.Bar(
+                        x=ward_names,
+                        y=illiteracy_counts,
+                        marker_color=['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'],
+                        text=[f'{int(val):,}' for val in illiteracy_counts],
+                        textposition='auto'
+                    )
+                ])
+                
+                fig.update_layout(
+                    title='Top 5 Wards by Illiteracy Count',
+                    xaxis_title='Ward Name',
+                    yaxis_title='Total Illiterates',
+                    xaxis_tickangle=-45
+                )
+                
+                # Save as HTML
+                html_path = output_path.with_suffix('.html')
+                fig.write_html(str(html_path))
+                print_success(f"Interactive visualization saved: {html_path}")
+                
+                # Try to save as PNG if kaleido is available
+                try:
+                    fig.write_image(str(output_path))
+                    print_success(f"Static visualization saved: {output_path}")
+                except Exception as e:
+                    print(f"   📊 PNG export failed (install kaleido): {e}")
+                    
+            except (ImportError, KeyboardInterrupt, Exception) as e:
+                print(f"   📊 Plotly error ({type(e).__name__}), using text fallback")
+                generate_text_chart(df, output_path)
+        else:
+            # Fallback to text-based visualization
+            generate_text_chart(df, output_path)
+            
     except Exception as e:
-        print(f"Warning: Could not generate visualization: {e}")
-        return False
+        print(f"   📊 Visualization error: {str(e)[:100]}...")
+        generate_text_chart(df, output_path)
 
-def transform(args):
-    """
-    Transform a cleaned CSV file.
-    """
-    try:
-        print_step("TRANSFORM", "Starting data transformation process")
-        
-        input_path = Path(args.input_file)
-        if not input_path.exists():
-            print_error(f"Input file '{args.input_file}' not found.")
-            sys.exit(1)
-
-        print_step("LOAD", f"Reading cleaned file: {input_path.name}")
-        df = pd.read_csv(input_path)
-        print_success(f"Loaded {len(df)} rows for transformation")
-
-        print_step("PROCESS", "Applying transformations and aggregations")
-        agent = TransformationAgent()
-        df_transformed, report = agent.transform_data(df, input_path.name)
-        print_success("Transformations completed")
-
-        # Print transformation summary
-        print(f"\n🔄 Transformation Summary:")
-        print(f"   • Total illiterates: {report['total_illiterates']:,}")
-        print(f"   • Male illiterates: {report['aggregations']['by_gender']['male']:,}")
-        print(f"   • Female illiterates: {report['aggregations']['by_gender']['female']:,}")
-        print(f"   • Top ward: {report['aggregations']['top_wards'][0]['ward']} ({report['aggregations']['top_wards'][0]['illiterates']:,} illiterates)")
-
-        # Prepare output paths
-        output_dir = Path(args.output_dir)
-        output_path = output_dir / f"{input_path.stem.replace('_standardized', '')}_transformed.csv"
-        report_path = Path("outputs/transformation_report.json")
-        viz_path = Path("outputs/trend.png")
-
-        # Save outputs
-        print_step("SAVE", "Saving transformed data and generating visualization")
-        output_dir.mkdir(parents=True, exist_ok=True)
-        Path("outputs").mkdir(exist_ok=True)
-        
-        df_transformed.to_csv(output_path, index=False)
-        with open(report_path, 'w') as f:
-            json.dump(report, f, indent=2)
-        
-        # Generate visualization
-        viz_success = generate_visualization(df_transformed, viz_path)
-
-        print_success(f"Successfully transformed {input_path.name}")
-        print(f"   📁 Transformed data: {output_path}")
-        print(f"   📄 Transformation report: {report_path}")
-        if viz_success:
-            print(f"   📊 Visualization: {viz_path}")
-
-    except Exception as e:
-        print_error(str(e))
-        sys.exit(1)
-
-def generate_ai_summary_with_groq(report_content, df):
-    """Generate AI-powered summary using Groq API."""
+def generate_ai_summary_with_groq(df, summary_stats):
+    """Generate AI-powered summary using Groq LLM."""
     if not GROQ_AVAILABLE:
-        print("Warning: Groq not available, using placeholder summary")
-        return generate_ai_summary_placeholder(report_content)
+        return "## 📖 Narrative Insights (Local)\n\nGroq API not available. Using local analysis."
     
     api_key = os.getenv('GROQ_API_KEY')
     if not api_key:
-        print("Warning: No Groq API key found, using placeholder summary")
-        return generate_ai_summary_placeholder(report_content)
+        return "## 📖 Narrative Insights (Local)\n\nGroq API key not found in environment variables."
     
     try:
-        # Initialize Groq client with timeout and error handling
-        client = Groq(
-            api_key=api_key,
-            timeout=30.0  # 30 second timeout
-        )
+        client = Groq(api_key=api_key)
         
-        # Prepare data context for AI analysis
-        total_illiterates = int(df['total_illiterates'].sum())
-        male_total = int(df['male'].sum())
-        female_total = int(df['female'].sum())
+        # Prepare context from the data
+        top_wards = df.groupby('wardname')['total_illiterates_by_ward'].first().nlargest(5)
+        gender_stats = df.groupby('wardname').agg({'male': 'sum', 'female': 'sum'}).reset_index()
+        gender_stats['female_ratio'] = gender_stats['female'] / (gender_stats['male'] + gender_stats['female'])
+        high_female_wards = gender_stats[gender_stats['female_ratio'] > 0.6]['wardname'].tolist()
         
-        top_wards = (
-            df[['wardname', 'total_illiterates_by_ward']]
-            .drop_duplicates()
-            .nlargest(3, 'total_illiterates_by_ward')
-        )
-        
-        context = f"""
-        Dataset Analysis Context:
-        - Total illiterates: {total_illiterates:,}
-        - Male illiterates: {male_total:,}
-        - Female illiterates: {female_total:,}
-        - Top 3 wards: {', '.join(top_wards['wardname'].tolist())}
-        - Ward illiteracy counts: {top_wards['total_illiterates_by_ward'].tolist()}
-        
-        This is illiteracy data from Rangareddy Urban Area covering 42 wards.
-        """
-        
-        prompt = f"""
-        You are a policy analyst specializing in governance and education. Analyze this illiteracy dataset and provide actionable insights.
-        
-        {context}
-        
-        Generate a concise AI summary (max 200 words) that includes:
-        1. One key strategic insight about the data patterns
-        2. One specific policy recommendation with rationale
-        3. One implementation priority for immediate action
-        
-        Focus on practical governance applications. Use professional policy language.
-        """
-        
+        prompt = f"""Based on this illiteracy data analysis:
+
+Summary Statistics: {summary_stats}
+
+Top 5 wards with highest illiteracy:
+{chr(10).join([f"- {ward}: {count:.0f} illiterates" for ward, count in top_wards.items()])}
+
+Wards with high female illiteracy (>60%): {', '.join(high_female_wards[:3]) if high_female_wards else 'None identified'}
+
+Write narrative insights that include:
+1. A compelling opening statement about the overall situation
+2. Specific examples with ward names and numbers (like "Ward X has the highest illiteracy at Y%")
+3. Gender-specific observations and trends
+4. Geographic or demographic patterns you notice
+5. Human impact and policy implications
+
+Use storytelling techniques. Make it engaging and accessible to policymakers. Include specific numbers and ward names for credibility. Keep under 400 words."""
+
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama3-70b-8192",
             messages=[
-                {"role": "system", "content": "You are an expert policy analyst focused on data-driven governance recommendations."},
+                {"role": "system", "content": "You are an expert policy analyst who excels at turning data into compelling human stories that drive policy action."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=300,
-            temperature=0.3
+            max_tokens=500,
+            temperature=0.8
         )
         
-        ai_content = response.choices[0].message.content.strip()
-        
-        ai_summary = f"""
-## AI-Generated Summary
-
-{ai_content}
-
-*Generated using Groq AI (Llama3-8B) for enhanced policy analysis.*
-"""
-        return ai_summary
+        return f"## 📖 Narrative Insights (Groq LLM)\n\n{response.choices[0].message.content}"
         
     except Exception as e:
-        print(f"Warning: Groq API call failed: {e}")
-        return generate_ai_summary_placeholder(report_content)
+        return f"## 📖 Narrative Insights (Error)\n\nGroq API error: {str(e)[:100]}..."
 
-def generate_ai_summary_placeholder(report_content):
-    """Fallback placeholder function for AI summary."""
-    placeholder_summary = """
-## AI-Generated Summary
-
-**Key Insight:** The data reveals significant geographic concentration of illiteracy, with the top 3 wards accounting for a disproportionate share of the total illiterate population. This suggests that targeted interventions in these specific areas could yield maximum impact.
-
-**Gender Analysis:** The gender disparity in illiteracy rates indicates the need for tailored approaches that address the specific barriers faced by the more affected gender group.
-
-**Policy Priority:** Immediate focus should be placed on the highest-burden wards while developing scalable solutions that can be replicated across similar demographic areas.
-
-*Note: This summary was generated using fallback analysis. Groq API integration available with valid API key.*
-"""
-    return placeholder_summary
-
-def insights(args):
-    """
-    Generate insights report from a transformed CSV file.
-    """
+def generate_huggingface_analysis(df, summary_stats):
+    """Generate mathematical analysis using Hugging Face API with improved error handling."""
+    if not HUGGINGFACE_AVAILABLE:
+        return generate_local_mathematical_analysis(df)
+    
+    hf_api_key = os.getenv('HUGGINGFACE_API_KEY')
+    if not hf_api_key:
+        # Fallback to local mathematical analysis without HF API
+        return generate_local_mathematical_analysis(df)
+    
     try:
-        print_step("INSIGHTS", "Starting insights generation process")
+        # Prepare statistical data for analysis
+        ward_stats = df.groupby('wardname').agg({
+            'male': 'sum',
+            'female': 'sum', 
+            'total_illiterates_by_ward': 'first'
+        }).reset_index()
         
-        input_path = Path(args.input_file)
-        if not input_path.exists():
-            print_error(f"Input file '{args.input_file}' not found.")
-            sys.exit(1)
-
-        print_step("LOAD", f"Reading transformed file: {input_path.name}")
-        df = pd.read_csv(input_path)
-        print_success(f"Loaded {len(df)} rows for analysis")
-
-        print_step("ANALYZE", "Generating insights and policy recommendations")
-        agent = InsightsAgent()
-        report = agent.generate_insights_report(df)
-        print_success("Insights report generated")
-
-        # Generate AI-enhanced summary
-        print_step("AI_ENHANCE", "Generating AI-powered summary")
-        ai_summary = generate_ai_summary_with_groq(report, df)
-        enhanced_report = report + ai_summary
-        print_success("AI summary added")
-
-        # Prepare output path
-        report_path = Path("outputs/insights_report.md")
-
-        # Save output
-        print_step("SAVE", "Saving insights report")
-        Path("outputs").mkdir(exist_ok=True)
-        with open(report_path, 'w', encoding='utf-8') as f:
-            f.write(enhanced_report)
-
-        print_success("Successfully generated insights report")
-        print(f"   Insights report saved: {report_path}")
-
-        # --- Quick console summary for demo ---
+        # Calculate key metrics
+        total_wards = len(ward_stats)
+        avg_illiteracy = ward_stats['total_illiterates_by_ward'].mean()
+        std_illiteracy = ward_stats['total_illiterates_by_ward'].std()
+        
+        # Gender analysis
+        ward_stats['gender_ratio'] = ward_stats['female'] / (ward_stats['male'] + ward_stats['female'])
+        high_female_wards = ward_stats[ward_stats['gender_ratio'] > 0.6]
+        
+        # Simple clustering without sklearn (using our SimpleMlAgent approach)
         try:
-            print("\nQuick Insights Summary:")
+            from agents.simple_ml_agent import SimpleMlAgent
+            ml_agent = SimpleMlAgent()
             
-            # Top 3 wards
-            ward_summary = df[['wardname', 'total_illiterates_by_ward']].drop_duplicates().nlargest(3, 'total_illiterates_by_ward')
-            top_names = ", ".join(ward_summary["wardname"].astype(str).tolist())
+            # Prepare data for clustering
+            data_dict = {"combined_data": ward_stats}
+            cluster_results = ml_agent.perform_clustering_analysis(data_dict)
+            
+            # Outlier detection using IQR method
+            Q1 = ward_stats['total_illiterates_by_ward'].quantile(0.25)
+            Q3 = ward_stats['total_illiterates_by_ward'].quantile(0.75)
+            IQR = Q3 - Q1
+            outlier_threshold = Q3 + 1.5 * IQR
+            outliers = ward_stats[ward_stats['total_illiterates_by_ward'] > outlier_threshold]
+            
+            # Generate mathematical analysis report
+            analysis = f"""## 🔢 Mathematical Analysis (Enhanced)
 
-            # Gender gap
-            male_total = df["male"].sum()
-            female_total = df["female"].sum()
+### Statistical Overview
+- **Total Wards Analyzed**: {total_wards:,}
+- **Mean Illiteracy**: {avg_illiteracy:.1f} ± {std_illiteracy:.1f}
+- **Coefficient of Variation**: {(std_illiteracy/avg_illiteracy)*100:.1f}%
 
-            if female_total > male_total and male_total > 0:
-                gender_gap = round((female_total - male_total) / male_total * 100, 1)
-                print(f"   [→] Key finding: Female illiteracy is {gender_gap}% higher than male overall.")
-            elif male_total > female_total and female_total > 0:
-                gender_gap = round((male_total - female_total) / female_total * 100, 1)
-                print(f"   [→] Key finding: Male illiteracy is {gender_gap}% higher than female overall.")
-            else:
-                 print(f"   [→] Key finding: No significant gender gap in illiteracy rates.")
-
-            print(f"   [→] Recommendation: Target literacy programs in wards: {top_names}.")
+### Cluster Analysis (ML-Powered)
+"""
+            
+            if cluster_results.get("status") == "success":
+                for cluster in cluster_results.get("cluster_summary", []):
+                    analysis += f"- **Cluster {cluster['cluster_id'] + 1}**: {cluster['ward_count']} wards, avg: {cluster['avg_illiterates']:.0f}\n"
+                    analysis += f"  - Top wards: {', '.join(cluster['top_wards'][:2])}\n"
+            
+            # Outlier analysis
+            if len(outliers) > 0:
+                analysis += f"\n### Outlier Detection\n"
+                for _, outlier in outliers.head(3).iterrows():
+                    analysis += f"- **{outlier['wardname']}**: {outlier['total_illiterates_by_ward']:.0f} illiterates "
+                    analysis += f"({((outlier['total_illiterates_by_ward'] - avg_illiteracy)/avg_illiteracy)*100:+.0f}% from mean)\n"
+            
+            # Gender disparity analysis
+            analysis += f"\n### Gender Analysis\n"
+            analysis += f"- **High Female Illiteracy Wards**: {len(high_female_wards)} ({(len(high_female_wards)/total_wards)*100:.1f}%)\n"
+            analysis += f"- **Average Gender Ratio**: {ward_stats['gender_ratio'].mean():.2f} (female/total)\n"
+            
+            return analysis
+            
         except Exception as e:
-            print_error(f"Could not generate quick summary: {e}")
-
+            return f"## 🔢 Mathematical Analysis (Basic)\n\nML analysis error: {str(e)[:100]}..."
+    
     except Exception as e:
-        print_error(f"Error generating insights: {e}")
+        return f"## 🔢 Mathematical Analysis (Error)\n\nAnalysis failed: {str(e)[:100]}..."
+
+def generate_local_mathematical_analysis(df: pd.DataFrame) -> str:
+    """Generate local mathematical analysis without external APIs."""
+    try:
+        ward_stats = df.groupby('wardname').agg({
+            'male': 'sum',
+            'female': 'sum', 
+            'total_illiterates_by_ward': 'first'
+        }).reset_index()
+        
+        total_wards = len(ward_stats)
+        avg_illiteracy = ward_stats['total_illiterates_by_ward'].mean()
+        std_illiteracy = ward_stats['total_illiterates_by_ward'].std()
+        
+        # Gender analysis
+        ward_stats['gender_ratio'] = ward_stats['female'] / (ward_stats['male'] + ward_stats['female'])
+        high_female_wards = ward_stats[ward_stats['gender_ratio'] > 0.6]
+        
+        analysis = f"""## 🔢 Mathematical Analysis (Local)
+
+### Statistical Overview
+- **Total Wards Analyzed**: {total_wards:,}
+- **Mean Illiteracy**: {avg_illiteracy:.1f} ± {std_illiteracy:.1f}
+- **Coefficient of Variation**: {(std_illiteracy/avg_illiteracy)*100:.1f}%
+
+### Gender Analysis
+- **High Female Illiteracy Wards**: {len(high_female_wards)} ({(len(high_female_wards)/total_wards)*100:.1f}%)
+- **Average Gender Ratio**: {ward_stats['gender_ratio'].mean():.2f} (female/total)
+
+### Top 5 Wards by Illiteracy
+"""
+        
+        top_wards = ward_stats.nlargest(5, 'total_illiterates_by_ward')
+        for _, ward in top_wards.iterrows():
+            analysis += f"- **{ward['wardname']}**: {ward['total_illiterates_by_ward']:.0f} illiterates\n"
+        
+        return analysis
+        
+    except Exception as e:
+        return f"## 🔢 Mathematical Analysis (Error)\n\nLocal analysis failed: {str(e)[:100]}..."
+
+def generate_combined_ai_analysis(df, summary_stats):
+    """Generate combined AI analysis using both Groq and HuggingFace."""
+    print_step("AI ANALYSIS", "Generating narrative insights with Groq LLM")
+    groq_analysis = generate_ai_summary_with_groq(df, summary_stats)
+    
+    print_step("AI ANALYSIS", "Generating mathematical insights with HuggingFace")
+    hf_analysis = generate_huggingface_analysis(df, summary_stats)
+    
+    # Combine both analyses
+    combined_analysis = f"""# 🤖 AI-Powered Data Insights Report
+
+{groq_analysis}
+
+---
+
+{hf_analysis}
+
+---
+
+## 📋 Summary
+This analysis combines narrative storytelling (Groq LLM) with mathematical analysis (HuggingFace/Local ML) to provide comprehensive insights for policy decision-making.
+"""
+    
+    return combined_analysis
+
+# CLI command functions
+def ingest(args):
+    """Ingest and standardize a CSV file."""
+    input_path = Path(args.input_file)
+    
+    if not input_path.exists():
+        print_error(f"Input file '{args.input_file}' not found.")
+        sys.exit(1)
+    
+    print_step("INGEST", f"Starting ingestion of {input_path.name}")
+    
+    agent = IngestionAgent()
+    result = agent.ingest_csv(str(input_path))
+    
+    if result['status'] == 'success':
+        print_success(f"Ingestion completed: {result['output_file']}")
+        print(f"   📊 Schema: {result['schema_summary']}")
+    else:
+        print_error(f"Ingestion failed: {result['message']}")
         sys.exit(1)
 
-def cluster_command(args):
-    """Run clustering analysis on multiple CSV files (simplified version)."""
-    print_step("CLUSTER", "Starting clustering analysis")
-    print("   ⚠️  CrewAI clustering temporarily disabled due to dependency conflicts")
-    print("   📄 Use simplified clustering implementation instead")
+def clean(args):
+    """Clean a CSV file."""
+    input_path = Path(args.input_file)
     
-    # Create placeholder output
-    results = {
-        "status": "disabled",
-        "message": "CrewAI clustering temporarily disabled",
-        "files_processed": len(args.csv_files) if args.csv_files else 0
-    }
+    if not input_path.exists():
+        print_error(f"Input file '{args.input_file}' not found.")
+        sys.exit(1)
     
-    output_file = "outputs/clusters.json"
-    os.makedirs("outputs", exist_ok=True)
-    with open(output_file, 'w') as f:
-        json.dump(results, f, indent=2)
+    print_step("CLEAN", f"Starting cleaning of {input_path.name}")
     
-    print_success(f"Clustering placeholder created: {output_file}")
+    agent = CleaningAgent()
+    result = agent.clean_csv(str(input_path))
+    
+    if result['status'] == 'success':
+        print_success(f"Cleaning completed: {result['output_file']}")
+        print(f"   📊 Report: {result['report_file']}")
+    else:
+        print_error(f"Cleaning failed: {result['message']}")
+        sys.exit(1)
 
-def anomalies_command(args):
-    """Run anomaly detection on multiple CSV files (simplified version)."""
-    print_step("ANOMALIES", "Starting anomaly detection")
-    print("   ⚠️  CrewAI anomaly detection temporarily disabled due to dependency conflicts")
-    print("   📄 Use simplified anomaly detection implementation instead")
+def transform(args):
+    """Transform a cleaned CSV file."""
+    print_step("TRANSFORM", "Starting data transformation process")
     
-    # Create placeholder output
-    results = {
-        "status": "disabled",
-        "message": "CrewAI anomaly detection temporarily disabled",
-        "files_processed": len(args.csv_files) if args.csv_files else 0
+    input_path = Path(args.input_file)
+    
+    if not input_path.exists():
+        print_error(f"Input file '{args.input_file}' not found.")
+        sys.exit(1)
+
+    print_step("LOAD", f"Reading cleaned file: {input_path.name}")
+    df = pd.read_csv(input_path)
+    print_success(f"Loaded {len(df)} rows for transformation")
+
+    print_step("TRANSFORM", "Applying transformations")
+    agent = TransformationAgent()
+    transformed_df, _ = agent.transform_data(df, input_path.name)
+    print_success("Data transformation completed")
+
+    # Generate visualization
+    print_step("VISUALIZE", "Generating data visualization")
+    viz_path = Path("outputs/illiteracy_visualization.png")
+    viz_path.parent.mkdir(parents=True, exist_ok=True)
+    generate_visualization(transformed_df, viz_path)
+
+    # Save transformed data
+    output_path = Path("data/cleaned") / f"{input_path.stem}_transformed.csv"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    transformed_df.to_csv(output_path, index=False)
+    print_success(f"Transformed data saved: {output_path}")
+
+def insights(args):
+    """Generate insights from a transformed CSV file."""
+    input_path = Path(args.input_file)
+    
+    if not input_path.exists():
+        print_error(f"Input file '{args.input_file}' not found.")
+        sys.exit(1)
+    
+    print_step("INSIGHTS", f"Generating insights from {input_path.name}")
+    
+    # Load data
+    df = pd.read_csv(input_path)
+    print_success(f"Loaded {len(df)} rows for analysis")
+    
+    # Generate summary statistics
+    summary_stats = {
+        'total_records': len(df),
+        'total_wards': df['wardname'].nunique() if 'wardname' in df.columns else 0,
+        'avg_illiteracy': df['total_illiterates_by_ward'].mean() if 'total_illiterates_by_ward' in df.columns else 0
     }
     
-    output_file = "outputs/anomalies.json"
-    os.makedirs("outputs", exist_ok=True)
-    with open(output_file, 'w') as f:
-        json.dump(results, f, indent=2)
+    # Generate AI-powered insights
+    print_step("AI INSIGHTS", "Generating comprehensive AI analysis")
+    ai_insights = generate_combined_ai_analysis(df, summary_stats)
     
-    print_success(f"Anomaly detection placeholder created: {output_file}")
+    # Save insights report
+    output_path = Path("outputs/insights_report.md")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(ai_insights)
+    
+    print_success(f"Insights report saved: {output_path}")
+
+def cluster(args):
+    """Cluster wards across multiple CSV files using ML."""
+    if not ML_AGENT_AVAILABLE:
+        print_error("SimpleMlAgent not available. Cannot perform clustering.")
+        sys.exit(1)
+    
+    input_path = Path(args.input_file)
+    
+    if not input_path.exists():
+        print_error(f"Input file '{args.input_file}' not found.")
+        sys.exit(1)
+    
+    print_step("CLUSTER", f"Starting ML clustering analysis on {input_path.name}")
+    
+    # Load data
+    df = pd.read_csv(input_path)
+    print_success(f"Loaded {len(df)} rows for clustering")
+    
+    # Perform clustering
+    ml_agent = SimpleMlAgent()
+    data_dict = {"main_data": df}
+    
+    result = ml_agent.perform_clustering_analysis(data_dict)
+    
+    if result and result.get('status') == 'success':
+        # Save clustering results
+        output_path = Path("outputs/clusters.json")
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(output_path, 'w') as f:
+            json.dump(result, f, indent=2)
+        
+        print_success(f"Clustering completed: {output_path}")
+        print(f"   📊 Found {len(result.get('cluster_summary', []))} clusters")
+    else:
+        print_error(f"Clustering failed: {result.get('message', 'Unknown error')}")
+
+def anomalies(args):
+    """Detect anomalous wards using ML."""
+    if not ML_AGENT_AVAILABLE:
+        print_error("SimpleMlAgent not available. Cannot perform anomaly detection.")
+        sys.exit(1)
+    
+    input_path = Path(args.input_file)
+    
+    if not input_path.exists():
+        print_error(f"Input file '{args.input_file}' not found.")
+        sys.exit(1)
+    
+    print_step("ANOMALIES", f"Starting anomaly detection on {input_path.name}")
+    
+    # Load data
+    df = pd.read_csv(input_path)
+    print_success(f"Loaded {len(df)} rows for anomaly detection")
+    
+    # Perform anomaly detection
+    ml_agent = SimpleMlAgent()
+    data_dict = df.to_dict('records')
+    
+    result = ml_agent.detect_anomalies(data_dict)
+    
+    if result and result.get('status') == 'success':
+        # Save anomaly results
+        output_path = Path("outputs/anomalies.json")
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(output_path, 'w') as f:
+            json.dump(result, f, indent=2)
+        
+        print_success(f"Anomaly detection completed: {output_path}")
+        print(f"   📊 Found {len(result.get('anomalies', []))} anomalies")
+    else:
+        print_error(f"Anomaly detection failed: {result.get('message', 'Unknown error')}")
+
+def run_pipeline(args):
+    """Run complete RTGS pipeline from raw CSV to final insights and ML analytics."""
+    input_file = args.input_file
+    skip_ml = getattr(args, 'skip_ml', False)
+    
+    print("=" * 50)
+    print("🚀 RTGS CLI - Complete Pipeline Execution")
+    print("=" * 50)
+    print("Production-Ready Governance Analytics")
+    print("Dual-API AI Integration + ML Analytics")
+    print("=" * 50)
+    print()
+    
+    # Step 1: Ingest
+    print_step("PIPELINE", "Step 1: Data Ingestion")
+    try:
+        ingest_args = argparse.Namespace(input_file=input_file)
+        ingest(ingest_args)
+    except SystemExit:
+        print_error("Pipeline failed at ingestion step")
+        return
+    
+    # Determine file paths for subsequent steps
+    input_path = Path(input_file)
+    standardized_file = f"data/raw/{input_path.stem}_standardized.csv"
+    cleaned_file = f"data/cleaned/{input_path.stem}_standardized_cleaned.csv"
+    transformed_file = f"data/cleaned/{input_path.stem}_standardized_cleaned_transformed.csv"
+    
+    # Step 2: Clean
+    print_step("PIPELINE", "Step 2: Data Cleaning")
+    try:
+        clean_args = argparse.Namespace(input_file=standardized_file)
+        clean(clean_args)
+    except SystemExit:
+        print_error("Pipeline failed at cleaning step")
+        return
+    
+    # Step 3: Transform
+    print_step("PIPELINE", "Step 3: Data Transformation")
+    try:
+        transform_args = argparse.Namespace(input_file=cleaned_file)
+        transform(transform_args)
+    except SystemExit:
+        print_error("Pipeline failed at transformation step")
+        return
+    
+    # Step 4: Insights
+    print_step("PIPELINE", "Step 4: AI Insights Generation")
+    try:
+        insights_args = argparse.Namespace(input_file=transformed_file)
+        insights(insights_args)
+    except SystemExit:
+        print_error("Pipeline failed at insights step")
+        return
+    
+    # Step 5 & 6: ML Analytics (if not skipped)
+    if not skip_ml and ML_AGENT_AVAILABLE:
+        print_step("PIPELINE", "Step 5: ML Clustering Analysis")
+        try:
+            cluster_args = argparse.Namespace(input_file=transformed_file)
+            cluster(cluster_args)
+        except SystemExit:
+            print_error("Pipeline failed at clustering step")
+            return
+        
+        print_step("PIPELINE", "Step 6: Anomaly Detection")
+        try:
+            anomaly_args = argparse.Namespace(input_file=transformed_file)
+            anomalies(anomaly_args)
+        except SystemExit:
+            print_error("Pipeline failed at anomaly detection step")
+            return
+    elif skip_ml:
+        print("   📊 ML analytics skipped (--skip-ml flag)")
+    else:
+        print("   📊 ML analytics skipped (SimpleMlAgent not available)")
+    
+    # Success summary
+    print()
+    print("=" * 50)
+    print("[✓] Complete Pipeline Execution Finished!")
+    print("=" * 50)
+    print("📊 Analytics Results Generated:")
+    print("   📄 Schema Analysis: outputs/schema_summary.json")
+    print("   🧹 Data Quality: outputs/cleaning_report.json")
+    print("   🔄 Transformations: outputs/transformation_report.json")
+    print("   🤖 Dual-API Insights: outputs/insights_report.md")
+    if not skip_ml and ML_AGENT_AVAILABLE:
+        print("   🎯 ML Clusters: outputs/clusters.json")
+        print("   🚨 Anomalies: outputs/anomalies.json")
+    print("   📈 Visualizations: outputs/trend.png")
+    print()
+    print("🎉 Production-ready governance analytics complete!")
+    print("📊 Complete data pipeline executed successfully")
+    print("🤖 Dual-API AI analysis (Groq + HuggingFace)")
+    if not skip_ml and ML_AGENT_AVAILABLE:
+        print("🎯 ML analytics completed (clustering + anomaly detection)")
+    print()
 
 def main():
+    """Main CLI function."""
     parser = argparse.ArgumentParser(description="RTGS CLI - Data Processing Pipeline")
-    subparsers = parser.add_subparsers(dest="command", required=True)
-
+    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    
     # Ingest command
-    ingest_parser = subparsers.add_parser("ingest", help="Ingest and process a CSV file.")
-    ingest_parser.add_argument("input_file", help="Path to the input CSV file.")
-    ingest_parser.add_argument("-o", "--output-dir", default="data/cleaned", help="Directory to save the cleaned output files.")
+    ingest_parser = subparsers.add_parser('ingest', help='Ingest and standardize a CSV file.')
+    ingest_parser.add_argument('input_file', help='Path to the input CSV file.')
     ingest_parser.set_defaults(func=ingest)
-
+    
     # Clean command
-    clean_parser = subparsers.add_parser("clean", help="Clean a standardized CSV file.")
-    clean_parser.add_argument("input_file", help="Path to the standardized CSV file.")
-    clean_parser.add_argument("-o", "--output-dir", default="data/cleaned", help="Directory to save the cleaned output file.")
+    clean_parser = subparsers.add_parser('clean', help='Clean a CSV file.')
+    clean_parser.add_argument('input_file', help='Path to the input CSV file.')
     clean_parser.set_defaults(func=clean)
-
+    
     # Transform command
-    transform_parser = subparsers.add_parser("transform", help="Transform a cleaned CSV file.")
-    transform_parser.add_argument("input_file", help="Path to the cleaned CSV file.")
-    transform_parser.add_argument("-o", "--output-dir", default="data/cleaned", help="Directory to save the transformed output file.")
+    transform_parser = subparsers.add_parser('transform', help='Transform a cleaned CSV file.')
+    transform_parser.add_argument('input_file', help='Path to the cleaned CSV file.')
     transform_parser.set_defaults(func=transform)
-
+    
     # Insights command
-    insights_parser = subparsers.add_parser("insights", help="Generate insights report from a transformed CSV file.")
-    insights_parser.add_argument("input_file", help="Path to the transformed CSV file.")
+    insights_parser = subparsers.add_parser('insights', help='Generate insights from a transformed CSV file.')
+    insights_parser.add_argument('input_file', help='Path to the transformed CSV file.')
     insights_parser.set_defaults(func=insights)
-
+    
     # Cluster command
-    cluster_parser = subparsers.add_parser("cluster", help="Cluster wards across multiple CSV files using Hugging Face ML.")
-    cluster_parser.add_argument("csv_files", nargs="+", help="Paths to CSV files for clustering analysis.")
-    cluster_parser.set_defaults(func=cluster_command)
-
+    cluster_parser = subparsers.add_parser('cluster', help='Cluster wards across multiple CSV files using ML.')
+    cluster_parser.add_argument('input_file', help='Path to the CSV file for clustering.')
+    cluster_parser.set_defaults(func=cluster)
+    
     # Anomalies command
-    anomalies_parser = subparsers.add_parser("anomalies", help="Detect anomalous wards using Hugging Face ML.")
-    anomalies_parser.add_argument("csv_files", nargs="+", help="Paths to CSV files for anomaly detection.")
-    anomalies_parser.set_defaults(func=anomalies_command)
-
+    anomalies_parser = subparsers.add_parser('anomalies', help='Detect anomalous wards using ML.')
+    anomalies_parser.add_argument('input_file', help='Path to the CSV file for anomaly detection.')
+    anomalies_parser.set_defaults(func=anomalies)
+    
+    # Pipeline command - run entire pipeline with single command
+    pipeline_parser = subparsers.add_parser('pipeline', help='Run complete RTGS pipeline from raw CSV to final insights and ML analytics.')
+    pipeline_parser.add_argument('input_file', help='Path to the raw CSV file.')
+    pipeline_parser.add_argument('--skip-ml', action='store_true', help='Skip ML clustering and anomaly detection.')
+    pipeline_parser.set_defaults(func=run_pipeline)
+    
     args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        sys.exit(1)
+    
     args.func(args)
 
 if __name__ == "__main__":

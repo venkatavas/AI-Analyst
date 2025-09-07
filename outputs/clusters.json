@@ -1,5 +1,63 @@
 {
-  "status": "disabled",
-  "message": "CrewAI clustering temporarily disabled",
-  "files_processed": 1
+  "status": "success",
+  "algorithm": "Simple K-Means",
+  "n_clusters": 5,
+  "total_wards_analyzed": 687,
+  "cluster_summary": [
+    {
+      "cluster_id": 0,
+      "ward_count": 46,
+      "avg_illiterates": 2372.195652173913,
+      "top_wards": [
+        "JAGANNADHAPURAM",
+        "JAGANNADHAPURAM",
+        "MALLARAM"
+      ]
+    },
+    {
+      "cluster_id": 1,
+      "ward_count": 115,
+      "avg_illiterates": 1583.6347826086956,
+      "top_wards": [
+        "MANIKYARAM",
+        "POCHARAM",
+        "NACHARAM"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "ward_count": 49,
+      "avg_illiterates": 2587.2448979591836,
+      "top_wards": [
+        "JAGANNADHAPURAM",
+        "GANGARAM",
+        "GANGARAM"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "ward_count": 252,
+      "avg_illiterates": 539.7459391920033,
+      "top_wards": [
+        "GOLLAGUDEM",
+        "KOTHAGUDEM",
+        "NARAYANAPURAM"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "ward_count": 225,
+      "avg_illiterates": 1007.0844444444444,
+      "top_wards": [
+        "AMMAPALEM",
+        "PAINAMPALLI",
+        "BHEEMAVARAM"
+      ]
+    }
+  ],
+  "features_used": [
+    "male",
+    "female",
+    "total_illiterates_by_ward"
+  ]
 }

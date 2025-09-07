@@ -1,31 +1,31 @@
 {
-  "dataset_name": "Illiterate_Rangareddy_Urban_Area1_standardized_cleaned.csv",
-  "total_illiterates": 446659,
+  "dataset_name": "Illiterate_Khammam_Rural_standardized_cleaned.csv",
+  "total_illiterates": 660495,
   "aggregations": {
     "by_gender": {
-      "male": 176020,
-      "female": 270639
+      "male": 266410,
+      "female": 394085
     },
     "top_wards": [
       {
-        "ward": "Serilingampally",
-        "illiterates": 19086
+        "ward": "JAGANNADHAPURAM",
+        "illiterates": 3798
       },
       {
-        "ward": "Attapur",
-        "illiterates": 18684
+        "ward": "GANGARAM",
+        "illiterates": 3762
       },
       {
-        "ward": "Gajula Ramaram",
-        "illiterates": 15800
+        "ward": "CHALLA SAMUDRAM",
+        "illiterates": 3323
       },
       {
-        "ward": "Mothinagar",
-        "illiterates": 14583
+        "ward": "MORAMPALLE",
+        "illiterates": 3308
       },
       {
-        "ward": "Hafeezpet",
-        "illiterates": 14414
+        "ward": "MALLARAM",
+        "illiterates": 3295
       }
     ]
   },
@@ -35,5 +35,5 @@
     "percentage_female",
     "rank_by_illiterates"
   ],
-  "notes": "Dataset transformed successfully. Found 446659 total illiterates across 51 wards."
+  "notes": "Dataset transformed successfully. Found 660495 total illiterates across 630 wards."
 }

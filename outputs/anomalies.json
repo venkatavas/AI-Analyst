@@ -1,5 +1,185 @@
 {
-  "status": "disabled",
-  "message": "CrewAI anomaly detection temporarily disabled",
-  "files_processed": 4
+  "status": "success",
+  "summary": {
+    "total_outliers": 29,
+    "detection_method": "IQR",
+    "threshold": 2838,
+    "mean_deviation": "+185%"
+  },
+  "anomalies": [
+    {
+      "ward": "BAYYARAM",
+      "illiterates": 3053,
+      "deviation_percent": "+169%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "KOTHAPETA",
+      "illiterates": 3088,
+      "deviation_percent": "+172%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "VENKATAPURAM",
+      "illiterates": 2912,
+      "deviation_percent": "+156%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "MORAMPALLE",
+      "illiterates": 3308,
+      "deviation_percent": "+191%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "JAGANNADHAPURAM",
+      "illiterates": 3798,
+      "deviation_percent": "+234%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "MULKANOOR",
+      "illiterates": 3083,
+      "deviation_percent": "+171%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "LAXMIDEVIPALLE",
+      "illiterates": 2993,
+      "deviation_percent": "+163%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "PENUBALLI",
+      "illiterates": 2918,
+      "deviation_percent": "+157%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "REGALLA",
+      "illiterates": 3054,
+      "deviation_percent": "+169%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "SEETHARAMPURAM",
+      "illiterates": 3176,
+      "deviation_percent": "+180%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "SUJATHANAGAR",
+      "illiterates": 3146,
+      "deviation_percent": "+177%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "MALLARAM",
+      "illiterates": 3295,
+      "deviation_percent": "+190%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "MALLARAM",
+      "illiterates": 3295,
+      "deviation_percent": "+190%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "VENKATAPURAM",
+      "illiterates": 2912,
+      "deviation_percent": "+156%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "JAGANNADHAPURAM",
+      "illiterates": 3798,
+      "deviation_percent": "+234%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "JAGANNADHAPURAM",
+      "illiterates": 3798,
+      "deviation_percent": "+234%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "PENUBALLI",
+      "illiterates": 2918,
+      "deviation_percent": "+157%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "TEKULAPALLI",
+      "illiterates": 3231,
+      "deviation_percent": "+184%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "BAYYARAM",
+      "illiterates": 3053,
+      "deviation_percent": "+169%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "MALLARAM",
+      "illiterates": 3295,
+      "deviation_percent": "+190%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "REGALLA",
+      "illiterates": 3054,
+      "deviation_percent": "+169%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "GANGARAM",
+      "illiterates": 3762,
+      "deviation_percent": "+231%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "SEETHARAMPURAM",
+      "illiterates": 3176,
+      "deviation_percent": "+180%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "MALLARAM",
+      "illiterates": 3295,
+      "deviation_percent": "+190%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "THALLADA",
+      "illiterates": 3241,
+      "deviation_percent": "+185%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "GANGARAM",
+      "illiterates": 3762,
+      "deviation_percent": "+231%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "TEKULAPALLI",
+      "illiterates": 3231,
+      "deviation_percent": "+184%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "VENKATAPURAM",
+      "illiterates": 2912,
+      "deviation_percent": "+156%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "CHALLA SAMUDRAM",
+      "illiterates": 3323,
+      "deviation_percent": "+192%",
+      "risk_category": "high"
+    }
+  ]
 }

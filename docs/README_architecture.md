@@ -1,29 +1,44 @@
-# Architecture Overview
+# 🏗️ Production Architecture Overview
 
-## Multi-Agent Pipeline Design
+## 🚀 **Production-Ready Multi-Agent Pipeline**
 
-RTGS CLI implements a modular, agent-based architecture that processes data through four specialized stages:
+RTGS CLI implements a **production-grade, dual-API architecture** that processes governance data through specialized agents with enterprise-level stability:
 
 ```
-Raw CSV Data
+Raw CSV Data (687+ records)
      ↓
 ┌─────────────────┐
-│ Ingestion Agent │ → Schema validation, column standardization
+│ Ingestion Agent │ → Schema validation, standardization
 └─────────────────┘
      ↓
 ┌─────────────────┐
-│ Cleaning Agent  │ → Duplicate removal, missing value handling, outlier detection
+│ Cleaning Agent  │ → Quality assessment, duplicate removal
 └─────────────────┘
      ↓
 ┌─────────────────┐
-│Transform Agent  │ → Aggregations, feature engineering, statistical analysis
+│Transform Agent  │ → Feature engineering, ward aggregation
 └─────────────────┘
      ↓
 ┌─────────────────┐
-│ Insights Agent  │ → Policy recommendations, AI-enhanced summaries
+│ Insights Agent  │ → Dual-API AI analysis (Groq + HuggingFace)
 └─────────────────┘
      ↓
-Policy Reports & Visualizations
+┌─────────────────┐
+│ SimpleMlAgent   │ → ML clustering, anomaly detection
+└─────────────────┘
+     ↓
+Professional Reports & Visualizations
+```
+
+## 🤖 **Dual-API AI Integration**
+
+### **Production AI Architecture**
+```
+Input Data → Groq LLM (Narrative) + HuggingFace (Mathematical) → Combined Insights
+                ↓                           ↓
+        Policy Stories              Statistical Analysis
+                ↓                           ↓
+                    Combined AI Report
 ```
 
 ## Agent Responsibilities
@@ -61,15 +76,26 @@ Policy Reports & Visualizations
   - `transformation_report.json`
 
 ### 4. Insights Agent (`agents/insights_agent.py`)
-- **Purpose**: Policy analysis and reporting
+- **Purpose**: Dual-API AI analysis and policy reporting
 - **Functions**:
-  - Statistical trend identification
-  - Policy recommendation generation
-  - AI-enhanced summary creation (Groq API integration)
-  - Markdown report compilation
+  - **Groq LLM Integration**: Narrative policy insights using llama3-70b-8192
+  - **HuggingFace API**: Mathematical analysis and statistical processing
+  - **Combined AI Reports**: Merged narrative + mathematical insights
+  - **Smart Fallbacks**: Local analysis when APIs unavailable
 - **Outputs**:
-  - `insights_report.md`
+  - `insights_report.md` (comprehensive AI analysis)
   - Console summary with key findings
+
+### 5. SimpleMlAgent (`agents/simple_ml_agent.py`)
+- **Purpose**: Local ML analytics without external dependencies
+- **Functions**:
+  - **K-means Clustering**: Ward segmentation (5 clusters)
+  - **Anomaly Detection**: IQR-based outlier identification
+  - **Statistical Analysis**: Coefficient of variation, gender ratios
+  - **Pure Python Implementation**: No scikit-learn dependency
+- **Outputs**:
+  - `clusters.json` (cluster analysis results)
+  - `anomalies.json` (outlier detection results)
 
 ## Design Principles
 
@@ -100,9 +126,11 @@ Built-in monitoring includes:
 - **Argparse**: CLI argument parsing and validation
 
 ### AI/ML Integration
-- **CrewAI**: Multi-agent orchestration (future enhancement)
-- **Groq API**: Large language model integration for insights
-- **Matplotlib**: Statistical visualization generation
+- **Groq API**: LLM integration (llama3-70b-8192) for narrative insights
+- **HuggingFace API**: Mathematical analysis and statistical processing
+- **SimpleMlAgent**: Local ML clustering and anomaly detection
+- **Plotly**: Interactive visualizations (environment-controlled)
+- **Smart Fallbacks**: Text-based charts and local analysis
 
 ### Data Processing
 - **JSON**: Structured reporting format

@@ -1,19 +1,22 @@
-# Output Reference
+# 📊 Production Output Reference
 
 ## Overview
 
-RTGS CLI generates comprehensive outputs organized in the `/outputs/` directory. Each file serves a specific purpose for governance analysis and policy decision-making.
+RTGS CLI generates **production-grade outputs** organized in the `/outputs/` directory. Each file serves a specific purpose for governance analysis, policy decision-making, and AI-powered insights.
 
 ## File Structure
 
 ```
 outputs/
-├── schema_summary.json      # Detailed dataset metadata
-├── schema_summary.csv       # Tabular schema information
-├── cleaning_report.json     # Data quality improvements log
-├── transformation_report.json # Statistical analysis results
-├── insights_report.md       # Policy recommendations
-└── trend.png               # Visualization of key findings
+├── schema_summary.json         # Dataset metadata and validation
+├── schema_summary.csv          # Tabular schema information
+├── cleaning_report.json        # Data quality improvements log
+├── transformation_report.json  # Statistical analysis results
+├── insights_report.md          # Dual-API AI policy recommendations
+├── clusters.json               # ML clustering analysis (SimpleMlAgent)
+├── anomalies.json              # Statistical outlier detection
+├── trend.png                   # Interactive/text-based visualizations
+└── ward_analysis.txt           # Text-based fallback charts
 ```
 
 ## Detailed File Descriptions
@@ -24,6 +27,114 @@ outputs/
 **Purpose:** Complete dataset metadata for technical analysis
 
 **Sample Content:**
+```json
+{
+  "dataset_overview": {
+    "total_rows": 687,
+    "total_columns": 7,
+    "file_size_mb": 0.045
+  },
+  "column_details": {
+    "district": {"type": "object", "non_null": 687, "unique": 1},
+    "mandal": {"type": "object", "non_null": 687, "unique": 46},
+    "wardname": {"type": "object", "non_null": 687, "unique": 630},
+    "female": {"type": "int64", "non_null": 687, "unique": 312},
+    "male": {"type": "int64", "non_null": 687, "unique": 298},
+    "transgender": {"type": "int64", "non_null": 687, "unique": 4}
+  }
+}
+```
+
+### 2. AI-Powered Insights
+
+#### `insights_report.md`
+**Purpose:** Dual-API AI analysis combining Groq narrative insights with HuggingFace mathematical analysis
+
+**Key Sections:**
+- **Executive Summary**: High-level governance findings
+- **Groq AI Narrative**: Policy storytelling and recommendations
+- **HuggingFace Analysis**: Statistical and mathematical insights
+- **Combined Recommendations**: Merged AI perspectives
+- **Visualizations**: Charts and statistical breakdowns
+
+**Sample Content:**
+```markdown
+# 🏛️ Governance Insights Report
+
+## Executive Summary
+Analysis of 687 records across 630 wards reveals significant literacy challenges...
+
+## 🤖 Groq AI Insights
+The data reveals concerning patterns in rural literacy distribution...
+
+## 🧮 HuggingFace Mathematical Analysis
+Statistical analysis indicates coefficient of variation of 60.6%...
+
+## 📊 Combined AI Recommendations
+1. Target high-risk clusters (Cluster 2: 24 wards with 3,001 avg illiterates)
+2. Address gender disparity (265 wards with >60% female illiteracy)
+3. Focus on outlier wards requiring immediate intervention
+```
+
+### 3. ML Analytics Outputs
+
+#### `clusters.json`
+**Purpose:** SimpleMlAgent k-means clustering results for ward segmentation
+
+**Sample Content:**
+```json
+{
+  "summary": {
+    "total_wards": 630,
+    "clusters_identified": 5,
+    "algorithm": "k-means",
+    "coefficient_of_variation": 60.6
+  },
+  "clusters": {
+    "cluster_1": {
+      "wards": 198,
+      "avg_illiterates": 869,
+      "top_wards": ["BILLUPADU", "PEDDAGOLLAGUDEM"],
+      "risk_level": "low"
+    },
+    "cluster_2": {
+      "wards": 24,
+      "avg_illiterates": 3001,
+      "top_wards": ["JAGANNADHAPURAM", "GANGARAM"],
+      "risk_level": "high"
+    }
+  }
+}
+```
+
+#### `anomalies.json`
+**Purpose:** Statistical outlier detection using IQR-based analysis
+
+**Sample Content:**
+```json
+{
+  "summary": {
+    "total_outliers": 3,
+    "detection_method": "IQR",
+    "threshold": 1750,
+    "mean_deviation": "+186%"
+  },
+  "outliers": [
+    {
+      "ward": "ASWAPURAM",
+      "illiterates": 2617,
+      "deviation_percent": "+150%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "BAYYARAM", 
+      "illiterates": 3053,
+      "deviation_percent": "+191%",
+      "risk_category": "critical"
+    }
+  ]
+}
+```
 ```json
 {
   "columns": [

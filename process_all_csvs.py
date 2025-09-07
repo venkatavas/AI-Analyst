@@ -10,16 +10,25 @@ import glob
 from pathlib import Path
 
 def run_command(cmd, description):
-    """Run a command and handle errors."""
+    """Run a command and handle errors with detailed logging."""
     print(f"[→] {description}")
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=os.getcwd())
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=os.getcwd(), timeout=300)
         if result.returncode == 0:
             print(f"[✓] {description} completed")
+            if result.stdout.strip():
+                print(f"    Output: {result.stdout.strip()[:200]}...")
             return True
         else:
-            print(f"[✗] {description} failed: {result.stderr}")
+            print(f"[✗] {description} failed")
+            if result.stderr.strip():
+                print(f"    Error: {result.stderr.strip()}")
+            if result.stdout.strip():
+                print(f"    Output: {result.stdout.strip()}")
             return False
+    except subprocess.TimeoutExpired:
+        print(f"[✗] {description} timed out after 5 minutes")
+        return False
     except Exception as e:
         print(f"[✗] {description} error: {e}")
         return False

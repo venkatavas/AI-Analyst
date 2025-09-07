@@ -3,8 +3,49 @@ Cleaning Agent - Handles data cleaning and standardization.
 """
 import pandas as pd
 import numpy as np
+import json
+from pathlib import Path
 
 class CleaningAgent:
+    def __init__(self):
+        pass
+
+    def clean_csv(self, file_path: str):
+        """Clean a CSV file and save results."""
+        try:
+            input_path = Path(file_path)
+            
+            # Load CSV
+            df = pd.read_csv(input_path)
+            
+            # Clean data
+            cleaned_df, report = self.clean_data(df)
+            
+            # Save cleaned file
+            output_path = Path("data/cleaned") / f"{input_path.stem}_cleaned.csv"
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            cleaned_df.to_csv(output_path, index=False)
+            
+            # Save cleaning report
+            report_path = Path("outputs/cleaning_report.json")
+            report_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(report_path, 'w') as f:
+                json.dump(report, f, indent=2)
+            
+            return {
+                'status': 'success',
+                'output_file': str(output_path),
+                'report_file': str(report_path),
+                'message': f"Successfully cleaned {len(cleaned_df)} rows"
+            }
+            
+        except Exception as e:
+            return {
+                'status': 'error',
+                'message': f"Cleaning failed: {str(e)}"
+            }
+
     def clean_data(self, df: pd.DataFrame) -> (pd.DataFrame, dict):
         """Clean and standardize the input DataFrame."""
         report = {

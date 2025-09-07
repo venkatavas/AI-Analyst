@@ -1,102 +1,134 @@
-# RTGS CLI - Real-Time Governance System
+# 🏛️ RTGS CLI - Real-Time Governance System
 
-## Overview
+[![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green)](https://github.com/your-repo)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue)](https://python.org)
+[![AI Powered](https://img.shields.io/badge/AI-Groq%20%2B%20HuggingFace-orange)](https://groq.com)
+[![ML Analytics](https://img.shields.io/badge/ML-Clustering%20%2B%20Anomaly%20Detection-purple)](https://github.com/your-repo)
 
-The Real-Time Governance System (RTGS) CLI is a cutting-edge **Hybrid AI System** that combines multiple AI technologies for comprehensive governance data analysis. It features a multi-agent architecture powered by **Groq**, **CrewAI**, and **Hugging Face** APIs, with **MCP server integration** for seamless AI interoperability.
+## 🎯 Overview
 
-## Hybrid AI Architecture
+The **Real-Time Governance System (RTGS) CLI** is a production-ready **AI-powered governance data analysis platform** that transforms raw administrative data into actionable policy insights. Built with enterprise-grade stability and comprehensive error handling, it combines dual-API AI integration with advanced ML analytics for complete governance workflow automation.
 
-### 🤖 **Multi-AI Integration**
-- **Groq API**: Real-time policy insights and governance summaries
-- **CrewAI**: Multi-agent ML orchestration for clustering and anomaly detection  
-- **Hugging Face**: Semantic embeddings and advanced NLP capabilities
-- **MCP Server**: Model Context Protocol for external AI agent access
+## 🚀 Key Achievements
 
-### 🎯 **Specialized AI Agents**
-- **Data Analyst Agent**: Governance data pattern recognition
-- **Clustering Specialist**: Ward grouping using K-means with AI orchestration
-- **Anomaly Detection Specialist**: Statistical outlier identification with explanations
-- **Insights Agent**: Policy recommendation generation
+- ✅ **Production-Ready Stability**: Zero hanging imports, robust error handling
+- ✅ **Dual-API AI Integration**: Groq LLM + HuggingFace mathematical analysis  
+- ✅ **Complete ML Pipeline**: Clustering, anomaly detection, statistical insights
+- ✅ **Enterprise-Grade**: Processes 687+ records with 630 ward-level analytics
+- ✅ **Professional Output**: Multiple report formats (MD, JSON, TXT, HTML)
 
-## Problem Statement
+## 🤖 **AI Architecture**
 
-Governance data analysis faces critical challenges:
-- **Fragmented datasets** across multiple sources and formats
-- **Inconsistent data quality** affecting policy decisions
-- **Manual analysis bottlenecks** limiting real-time insights
-- **Lack of AI integration** for advanced pattern recognition
-- **No standardized ML workflows** for governance applications
+### **Dual-API Integration**
+- **Groq LLM (llama3-70b-8192)**: Narrative policy insights and storytelling
+- **HuggingFace API**: Mathematical analysis and statistical processing
+- **SimpleMlAgent**: Local ML clustering and anomaly detection
+- **Smart Fallbacks**: Graceful degradation when APIs unavailable
 
-## Solution
+### **Specialized Agents**
+- **IngestionAgent**: CSV standardization and schema validation
+- **CleaningAgent**: Data quality assessment and duplicate removal  
+- **TransformationAgent**: Feature engineering and statistical aggregations
+- **InsightsAgent**: AI-powered policy recommendations
+- **SimpleMlAgent**: ML clustering and outlier detection
 
-RTGS CLI delivers a comprehensive **Hybrid AI Solution**:
-- **Automated data pipeline** with multi-agent processing
-- **Real-time AI insights** using state-of-the-art language models
-- **Advanced ML capabilities** through CrewAI orchestration
-- **Professional governance reporting** with actionable recommendations
-- **API-first architecture** enabling seamless integration
+## 📊 **Analytics Capabilities**
 
-## ⚡ Key Features
+### **Statistical Analysis**
+- **Ward-Level Insights**: 630+ wards analyzed with comprehensive statistics
+- **Outlier Detection**: IQR-based anomaly identification with deviation metrics
+- **Gender Analysis**: Female illiteracy ratio tracking and high-risk ward identification
+- **Clustering Analysis**: 5-cluster ML segmentation with ward groupings
 
-### 🔄 **Multi-Agent Data Pipeline**
-- **Ingestion Agent**: CSV standardization and schema validation
-- **Cleaning Agent**: Data quality assessment and duplicate removal
-- **Transformation Agent**: Statistical aggregations and feature engineering
-- **Insights Agent**: Policy recommendations with AI enhancement
+### **AI-Powered Insights** 
+- **Narrative Generation**: Human-readable policy stories from data patterns
+- **Mathematical Analysis**: Statistical coefficients, variance analysis, clustering metrics
+- **Policy Recommendations**: Actionable insights for governance decision-making
+- **Trend Analysis**: Historical patterns and predictive indicators
 
-### 🤖 **Advanced AI Capabilities**
-- **Groq Integration**: Real-time policy insights and governance summaries
-- **CrewAI ML**: Multi-agent clustering and anomaly detection
-- **Hugging Face**: Semantic embeddings and NLP processing
-- **Hybrid AI Orchestration**: Coordinated multi-AI system responses
+## ⚡ **Core Features**
 
-### 🔗 **Enterprise Integration**
-- **MCP Server**: Model Context Protocol for AI agent interoperability
-- **API-First Design**: RESTful access to all pipeline functions
-- **CLI Interface**: Direct command-line usage for data scientists
-- **Async Processing**: Non-blocking operations for large datasets
+### 🔄 **Complete Data Pipeline**
+```
+Raw CSV → Ingest → Clean → Transform → AI Insights → Reports
+```
+- **Schema Validation**: Automatic CSV structure standardization
+- **Quality Assessment**: Missing data detection and duplicate removal
+- **Feature Engineering**: Statistical aggregations and derived metrics
+- **AI Enhancement**: Dual-API analysis with smart fallbacks
 
-### 📊 **Professional Outputs**
-- **Governance Reports**: Policy-focused insights and recommendations
-- **Statistical Analysis**: Ward-level clustering and anomaly detection
-- **Data Visualizations**: Automated charts and graphs
-- **JSON/CSV Exports**: Machine-readable results for integration
+### 🤖 **Production-Ready AI Integration**
+- **Environment-Controlled Loading**: `ENABLE_PLOTLY=true` for interactive charts
+- **Robust Error Handling**: Graceful fallbacks when APIs unavailable
+- **Smart Import Management**: No hanging imports, timeout protection
+- **Multiple Output Formats**: HTML, PNG, TXT, JSON, MD, CSV
 
-## 🚀 Quick Start
+### 📈 **Visualization System**
+- **Interactive Charts**: Plotly-based ward analysis (optional)
+- **Text-Based Fallbacks**: ASCII charts for universal compatibility
+- **Professional Reports**: Markdown with embedded statistics
+- **Export Options**: Multiple formats for different use cases
 
-### Prerequisites
+## 🚀 **Quick Start**
+
+### **Installation**
 ```bash
+# Clone repository
+git clone <your-repository-url>
+cd rtgs-cli
+
+# Create virtual environment
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac
+
 # Install dependencies
 pip install -r requirements.txt
-
-# Set up API keys in .env file
-GROQ_API_KEY=your_groq_key_here
-HUGGINGFACE_API_KEY=your_hf_key_here
 ```
 
-### Complete Pipeline Demo
+### **Environment Setup**
 ```bash
-# Run full demonstration
-python demo_full_pipeline.py
+# Create .env file with API keys
+GROQ_API_KEY=your_groq_api_key_here
+HUGGINGFACE_API_KEY=your_huggingface_api_key_here
 
-# Or run individual commands
-python cli.py ingest data/raw/your_data.csv
-python cli.py clean data/cleaned/your_data_standardized.csv
-python cli.py transform data/cleaned/your_data_cleaned.csv
-python cli.py insights data/cleaned/your_data_transformed.csv
-
-# New CrewAI ML commands
-python cli.py cluster data/cleaned/*.csv
-python cli.py anomalies data/cleaned/*.csv
+# Optional: Enable interactive visualizations
+ENABLE_PLOTLY=true
 ```
 
-### MCP Server Integration
-```bash
-# Start MCP server for AI agent access
-python mcp_server.py
+### **Usage Examples**
 
-# Available MCP tools: rtgs_ingest, rtgs_clean, rtgs_transform, 
-# rtgs_insights, rtgs_cluster, rtgs_anomalies, rtgs_pipeline
+#### **🚀 One-Command Complete Pipeline**
+```bash
+# Windows
+.\run_demo.bat
+
+# Cross-platform Python
+python run_demo.py
+```
+**Executes all 6 steps automatically:**
+1. Data ingestion (687 records)
+2. Data cleaning and quality assessment
+3. Statistical transformation and feature engineering
+4. Dual-API AI insights (Groq + HuggingFace)
+5. ML clustering analysis (5 clusters)
+6. Anomaly detection (IQR-based outliers)
+
+#### **Individual Commands** (if needed)
+```bash
+# Process governance data step-by-step
+python cli.py ingest data/raw/Illiterate_Khammam_Rural.csv
+python cli.py clean data/raw/Illiterate_Khammam_Rural_standardized.csv  
+python cli.py transform data/cleaned/Illiterate_Khammam_Rural_standardized_cleaned.csv
+python cli.py insights data/cleaned/Illiterate_Khammam_Rural_standardized_cleaned_transformed.csv
+python cli.py cluster data/cleaned/Illiterate_Khammam_Rural_standardized_cleaned_transformed.csv
+python cli.py anomalies data/cleaned/Illiterate_Khammam_Rural_standardized_cleaned_transformed.csv
+```
+
+#### **Get Help**
+```bash
+python cli.py --help
+python cli.py insights --help
 ```
 
 ## 📋 Demo Results

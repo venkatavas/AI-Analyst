@@ -3,21 +3,22 @@
 ## Dataset Overview
 
 ### Name
-**Illiterate Population - Rangareddy Urban Area**
+**Illiterate Population - Khammam Rural Area**
 
 ### Sector
 **Education & Literacy Governance**
 
 ### Source
-Government administrative records from Rangareddy District, Telangana State, India
+Government administrative records from Khammam District, Telangana State, India
 
 ### Data Scope
 
 #### Geographic Coverage
-- **District:** Rangareddy
-- **Area Type:** Urban municipalities
+- **District:** Khammam
+- **Area Type:** Rural constituencies  
 - **Administrative Level:** Ward-level granularity
-- **Total Wards:** 42 wards across multiple municipalities
+- **Total Records:** 687 records across 630+ wards
+- **Processing Status:** Production-ready with dual-API AI analysis
 
 #### Demographic Breakdown
 - **Gender Categories:** Male, Female, Transgender
