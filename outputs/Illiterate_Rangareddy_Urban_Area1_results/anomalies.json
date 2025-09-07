@@ -1,0 +1,10 @@
+{
+  "status": "success",
+  "summary": {
+    "total_outliers": 0,
+    "detection_method": "IQR",
+    "threshold": 19586,
+    "mean_deviation": "0%"
+  },
+  "anomalies": []
+}

@@ -1,0 +1,59 @@
+{
+  "status": "success",
+  "algorithm": "Simple K-Means",
+  "n_clusters": 5,
+  "total_wards_analyzed": 51,
+  "cluster_summary": [
+    {
+      "cluster_id": 0,
+      "ward_count": 8,
+      "avg_illiterates": 11974,
+      "top_wards": [
+        "Suraram Colony",
+        "Uppal"
+      ],
+      "risk_level": "high"
+    },
+    {
+      "cluster_id": 1,
+      "ward_count": 17,
+      "avg_illiterates": 8550,
+      "top_wards": [
+        "Karmanghat",
+        "Gachibowli"
+      ],
+      "risk_level": "high"
+    },
+    {
+      "cluster_id": 2,
+      "ward_count": 14,
+      "avg_illiterates": 5906,
+      "top_wards": [
+        "Champapet",
+        "Alwal-SC"
+      ],
+      "risk_level": "high"
+    },
+    {
+      "cluster_id": 3,
+      "ward_count": 7,
+      "avg_illiterates": 15815,
+      "top_wards": [
+        "Serilingampally",
+        "Attapur"
+      ],
+      "risk_level": "high"
+    },
+    {
+      "cluster_id": 4,
+      "ward_count": 5,
+      "avg_illiterates": 2421,
+      "top_wards": [
+        "Yapral-SC",
+        "Vansathalipuram"
+      ],
+      "risk_level": "high"
+    }
+  ],
+  "coefficient_of_variation": 45.55
+}

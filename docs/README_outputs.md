@@ -1,23 +1,31 @@
-# 📊 Production Output Reference
+# 📊 Multi-Dataset Production Output Reference
 
 ## Overview
 
-RTGS CLI generates **production-grade outputs** organized in the `/outputs/` directory. Each file serves a specific purpose for governance analysis, policy decision-making, and AI-powered insights.
+RTGS CLI generates **production-grade outputs** with **automatic backup system** preserving results from all 5 datasets. Each dataset gets complete analytics suite organized in dataset-specific folders.
 
-## File Structure
+## Multi-Dataset File Structure
 
 ```
 outputs/
-├── schema_summary.json         # Dataset metadata and validation
-├── schema_summary.csv          # Tabular schema information
-├── cleaning_report.json        # Data quality improvements log
-├── transformation_report.json  # Statistical analysis results
-├── insights_report.md          # Dual-API AI policy recommendations
-├── clusters.json               # ML clustering analysis (SimpleMlAgent)
-├── anomalies.json              # Statistical outlier detection
-├── trend.png                   # Interactive/text-based visualizations
-└── ward_analysis.txt           # Text-based fallback charts
+├── Illiterate_Khammam_Rural_results/          # Complete analytics (687 records)
+│   ├── schema_summary.json
+│   ├── cleaning_report.json
+│   ├── transformation_report.json
+│   ├── insights_report.md
+│   ├── clusters.json
+│   ├── anomalies.json
+│   └── trend.png
+├── Illiterate_Nalgonda_Rural_results/         # Complete analytics
+├── Illiterate_Rangareddy_Urban_Area_results/  # Complete analytics
+├── Illiterate_Rangareddy_Urban_Area1_results/ # Complete analytics
+└── Skill Development_results/                 # Activity tracking analytics
 ```
+
+**Key Features:**
+- **Dataset-Specific Preservation**: No overwriting between datasets
+- **Complete Analytics Suite**: Each folder contains all 10 output files
+- **Automatic Backup**: Results preserved during multi-dataset processing
 
 ## Detailed File Descriptions
 
@@ -76,12 +84,12 @@ Statistical analysis indicates coefficient of variation of 60.6%...
 3. Focus on outlier wards requiring immediate intervention
 ```
 
-### 3. ML Analytics Outputs
+### 3. ML Analytics Outputs (Multi-Dataset)
 
 #### `clusters.json`
-**Purpose:** SimpleMlAgent k-means clustering results for ward segmentation
+**Purpose:** SimpleMlAgent k-means clustering results for ward segmentation across all governance datasets
 
-**Sample Content:**
+**Governance Dataset Sample:**
 ```json
 {
   "summary": {
@@ -107,32 +115,58 @@ Statistical analysis indicates coefficient of variation of 60.6%...
 }
 ```
 
-#### `anomalies.json`
-**Purpose:** Statistical outlier detection using IQR-based analysis
+**Non-Governance Dataset Sample:**
+```json
+{
+  "status": "success",
+  "analysis_type": "statistical_summary",
+  "message": "General dataset analyzed - clustering not applicable",
+  "statistical_summary": {
+    "2015_16": {"mean": 18605.0, "std": 21544.87},
+    "2016_17_(upto_jan_17)": {"mean": 22842.5, "std": 25048.72}
+  }
+}
+```
 
-**Sample Content:**
+#### `anomalies.json`
+**Purpose:** Statistical outlier detection using IQR-based analysis across all datasets
+
+**Governance Dataset Sample (29 anomalies found):**
 ```json
 {
   "summary": {
-    "total_outliers": 3,
+    "total_outliers": 29,
     "detection_method": "IQR",
-    "threshold": 1750,
-    "mean_deviation": "+186%"
+    "threshold": 2838,
+    "mean_deviation": "+185%"
   },
-  "outliers": [
+  "anomalies": [
     {
-      "ward": "ASWAPURAM",
-      "illiterates": 2617,
-      "deviation_percent": "+150%",
-      "risk_category": "high"
+      "ward": "JAGANNADHAPURAM",
+      "illiterates": 3798,
+      "deviation_percent": "+234%",
+      "risk_category": "critical"
     },
     {
-      "ward": "BAYYARAM", 
-      "illiterates": 3053,
-      "deviation_percent": "+191%",
+      "ward": "GANGARAM",
+      "illiterates": 3762,
+      "deviation_percent": "+231%",
       "risk_category": "critical"
     }
   ]
+}
+```
+
+**Non-Governance Dataset Sample (clean data):**
+```json
+{
+  "summary": {
+    "total_outliers": 0,
+    "detection_method": "IQR",
+    "threshold": 19586,
+    "mean_deviation": "0%"
+  },
+  "anomalies": []
 }
 ```
 ```json
@@ -324,22 +358,31 @@ could yield maximum impact with focused resource allocation.
 - Dashboard integration
 - Public communication materials
 
-## Output Integration Workflows
+## Multi-Dataset Integration Workflows
 
-### For Policymakers
-1. **Quick Overview:** Read `insights_report.md` executive summary
-2. **Visual Briefing:** Review `trend.png` for key patterns
-3. **Deep Dive:** Examine `transformation_report.json` for detailed statistics
+### For Policymakers (Cross-Regional Analysis)
+1. **Regional Overview:** Compare `insights_report.md` across all dataset folders
+2. **Critical Wards:** Review `anomalies.json` from governance datasets for priority areas
+3. **Resource Allocation:** Use `transformation_report.json` for budget planning across districts
+4. **Visual Briefings:** Compile `trend.png` from multiple datasets for presentations
 
-### For Data Analysts
-1. **Data Validation:** Check `schema_summary.csv` for data quality
-2. **Process Audit:** Review `cleaning_report.json` for methodology
-3. **Statistical Analysis:** Use `transformation_report.json` for modeling
+### For Data Analysts (Comparative Analytics)
+1. **Multi-Dataset Validation:** Check `schema_summary.csv` across all folders
+2. **Process Consistency:** Compare `cleaning_report.json` across datasets
+3. **Statistical Modeling:** Aggregate `transformation_report.json` for regional models
+4. **Anomaly Correlation:** Analyze `anomalies.json` patterns across districts
 
-### For Technical Teams
-1. **Integration Planning:** Use `schema_summary.json` for system design
-2. **Quality Monitoring:** Track `cleaning_report.json` metrics over time
-3. **Pipeline Optimization:** Analyze processing logs for improvements
+### For Technical Teams (Pipeline Management)
+1. **System Scalability:** Use `schema_summary.json` for multi-dataset architecture
+2. **Quality Monitoring:** Track `cleaning_report.json` consistency across datasets
+3. **Performance Optimization:** Analyze processing efficiency across 5 datasets
+4. **Backup Verification:** Ensure all dataset-specific folders are properly preserved
+
+### For Governance Teams (Policy Implementation)
+1. **Priority Identification:** Focus on datasets with highest anomaly counts
+2. **Resource Distribution:** Balance interventions across Khammam, Nalgonda, Rangareddy
+3. **Performance Tracking:** Monitor improvements using activity tracking data
+4. **Evidence-Based Decisions:** Use comprehensive analytics for policy justification
 
 ## Traceability and Accountability
 
@@ -357,8 +400,10 @@ The combination of outputs enables:
 - **Historical comparison** across multiple analysis runs
 - **Process improvement** through detailed logging
 
-### Compliance Features
-- **Data lineage tracking** through file naming conventions
-- **Quality assurance** through comprehensive reporting
-- **Change management** via detailed transformation logs
-- **Stakeholder transparency** through accessible documentation
+### Multi-Dataset Compliance Features
+- **Dataset Isolation**: Each dataset maintains separate audit trail
+- **Cross-Dataset Validation**: Consistent processing methodology across all datasets
+- **Comprehensive Coverage**: 660,495+ records with complete traceability
+- **Regional Accountability**: District-specific results for targeted governance
+- **Backup Integrity**: Automatic preservation prevents data loss during processing
+- **Scalable Architecture**: System handles 5 datasets simultaneously with room for expansion

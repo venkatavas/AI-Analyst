@@ -1,0 +1,275 @@
+{
+  "status": "success",
+  "summary": {
+    "total_outliers": 44,
+    "detection_method": "IQR",
+    "threshold": 2305,
+    "mean_deviation": "+196%"
+  },
+  "anomalies": [
+    {
+      "ward": "ANNARAM",
+      "illiterates": 3296,
+      "deviation_percent": "+244%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "ATMAKUR",
+      "illiterates": 3484,
+      "deviation_percent": "+264%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "KORATIKAL",
+      "illiterates": 2414,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "ATMAKUR",
+      "illiterates": 3484,
+      "deviation_percent": "+264%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "DACHARAM",
+      "illiterates": 2409,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "POLE PALLI",
+      "illiterates": 2356,
+      "deviation_percent": "+146%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "BETHA VOLU",
+      "illiterates": 2557,
+      "deviation_percent": "+167%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "RAMAPURAM",
+      "illiterates": 3014,
+      "deviation_percent": "+215%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "DAMERACHERLA",
+      "illiterates": 2486,
+      "deviation_percent": "+160%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "KONDAMALLE PALLI",
+      "illiterates": 2536,
+      "deviation_percent": "+165%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "TATIKOLE",
+      "illiterates": 2324,
+      "deviation_percent": "+143%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "SARVARAM",
+      "illiterates": 2691,
+      "deviation_percent": "+181%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "GONABOINA PALLI",
+      "illiterates": 2420,
+      "deviation_percent": "+153%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "GUNDLA PALLI",
+      "illiterates": 2409,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "KOPPOLE",
+      "illiterates": 3277,
+      "deviation_percent": "+242%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "WARDHAMANU KOTA",
+      "illiterates": 2563,
+      "deviation_percent": "+168%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "AITI PAMULA",
+      "illiterates": 2491,
+      "deviation_percent": "+160%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "KOPPOLE",
+      "illiterates": 3277,
+      "deviation_percent": "+242%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "THUNGATHURTHY",
+      "illiterates": 3108,
+      "deviation_percent": "+225%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "GUNDLA PALLI",
+      "illiterates": 2409,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "MATTAM PALLI",
+      "illiterates": 2317,
+      "deviation_percent": "+142%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "CHINTHALA PALEM",
+      "illiterates": 2415,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "RAMAPURAM",
+      "illiterates": 3014,
+      "deviation_percent": "+215%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "ANNARAM",
+      "illiterates": 3296,
+      "deviation_percent": "+244%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "THUNGA PAHAD",
+      "illiterates": 2346,
+      "deviation_percent": "+145%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "SARVARAM",
+      "illiterates": 2691,
+      "deviation_percent": "+181%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "DACHARAM",
+      "illiterates": 2409,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "MUKUNDAPURAM",
+      "illiterates": 3825,
+      "deviation_percent": "+299%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "KORATIKAL",
+      "illiterates": 2414,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "SIRIPURAM",
+      "illiterates": 2434,
+      "deviation_percent": "+154%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "NARAYANAPUR",
+      "illiterates": 2368,
+      "deviation_percent": "+147%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "SARVAIL",
+      "illiterates": 2632,
+      "deviation_percent": "+175%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "DACHARAM",
+      "illiterates": 2409,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "MUKUNDAPURAM",
+      "illiterates": 3825,
+      "deviation_percent": "+299%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "MUKUNDAPURAM",
+      "illiterates": 3825,
+      "deviation_percent": "+299%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "MUKUNDAPURAM",
+      "illiterates": 3825,
+      "deviation_percent": "+299%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "THUNGATHURTHY",
+      "illiterates": 3108,
+      "deviation_percent": "+225%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "MUKUNDAPURAM",
+      "illiterates": 3825,
+      "deviation_percent": "+299%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "RAMANNAPET",
+      "illiterates": 2460,
+      "deviation_percent": "+157%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "SIRIPURAM",
+      "illiterates": 2434,
+      "deviation_percent": "+154%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "DACHARAM",
+      "illiterates": 2409,
+      "deviation_percent": "+152%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "SARVARAM",
+      "illiterates": 2691,
+      "deviation_percent": "+181%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "ANNARAM",
+      "illiterates": 3296,
+      "deviation_percent": "+244%",
+      "risk_category": "critical"
+    },
+    {
+      "ward": "ANNARAM",
+      "illiterates": 3296,
+      "deviation_percent": "+244%",
+      "risk_category": "critical"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+column,dtype,non_null,null_count,unique_count
+district_,object,51,0,1
+mandal,object,51,0,1
+circle,object,51,0,11
+ward,object,51,0,51
+female,int64,51,0,51
+male,int64,51,0,51
+transgender,int64,51,0,26

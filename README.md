@@ -2,26 +2,28 @@
 
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green)](https://github.com/your-repo)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue)](https://python.org)
-[![AI Powered](https://img.shields.io/badge/AI-Groq%20%2B%20HuggingFace-orange)](https://groq.com)
+[![AI Powered](https://img.shields.io/badge/AI-Groq%20%2B%20Local%20ML-orange)](https://groq.com)
 [![ML Analytics](https://img.shields.io/badge/ML-Clustering%20%2B%20Anomaly%20Detection-purple)](https://github.com/your-repo)
 
 ## 🎯 Overview
 
-The **Real-Time Governance System (RTGS) CLI** is a production-ready **AI-powered governance data analysis platform** that transforms raw administrative data into actionable policy insights. Built with enterprise-grade stability and comprehensive error handling, it combines dual-API AI integration with advanced ML analytics for complete governance workflow automation.
+The **Real-Time Governance System (RTGS) CLI** is a production-ready **AI-powered governance data analysis platform** that transforms raw administrative data into actionable policy insights. Built with enterprise-grade stability and comprehensive error handling, it combines Groq LLM integration with local ML analytics for complete governance workflow automation.
+
+**🎉 Multi-Dataset Pipeline**: Processes 5 datasets simultaneously with automatic backup system preserving all results.
 
 ## 🚀 Key Achievements
 
 - ✅ **Production-Ready Stability**: Zero hanging imports, robust error handling
-- ✅ **Dual-API AI Integration**: Groq LLM + HuggingFace mathematical analysis  
+- ✅ **AI-Powered Analytics**: Groq LLM + Local ML statistical analysis  
 - ✅ **Complete ML Pipeline**: Clustering, anomaly detection, statistical insights
 - ✅ **Enterprise-Grade**: Processes 687+ records with 630 ward-level analytics
 - ✅ **Professional Output**: Multiple report formats (MD, JSON, TXT, HTML)
 
 ## 🤖 **AI Architecture**
 
-### **Dual-API Integration**
-- **Groq LLM (llama3-70b-8192)**: Narrative policy insights and storytelling
-- **HuggingFace API**: Mathematical analysis and statistical processing
+### **AI Integration Architecture**
+- **Groq LLM (llama-3.3-70b-versatile)**: Narrative policy insights and storytelling
+- **Local Mathematical Analysis**: Pure Python statistical processing
 - **SimpleMlAgent**: Local ML clustering and anomaly detection
 - **Smart Fallbacks**: Graceful degradation when APIs unavailable
 
@@ -41,8 +43,8 @@ The **Real-Time Governance System (RTGS) CLI** is a production-ready **AI-powere
 - **Clustering Analysis**: 5-cluster ML segmentation with ward groupings
 
 ### **AI-Powered Insights** 
-- **Narrative Generation**: Human-readable policy stories from data patterns
-- **Mathematical Analysis**: Statistical coefficients, variance analysis, clustering metrics
+- **Narrative Generation**: Human-readable policy stories from data patterns (Groq LLM)
+- **Mathematical Analysis**: Statistical coefficients, variance analysis, clustering metrics (Local)
 - **Policy Recommendations**: Actionable insights for governance decision-making
 - **Trend Analysis**: Historical patterns and predictive indicators
 
@@ -98,7 +100,7 @@ ENABLE_PLOTLY=true
 
 ### **Usage Examples**
 
-#### **🚀 One-Command Complete Pipeline**
+#### **🚀 Multi-Dataset Pipeline (Recommended)**
 ```bash
 # Windows
 .\run_demo.bat
@@ -106,13 +108,22 @@ ENABLE_PLOTLY=true
 # Cross-platform Python
 python run_demo.py
 ```
-**Executes all 6 steps automatically:**
-1. Data ingestion (687 records)
+**Processes all 5 datasets automatically:**
+- **Illiterate_Khammam_Rural.csv** (687 records, 630+ wards)
+- **Illiterate_Nalgonda_Rural.csv** (governance data)
+- **Illiterate_Rangareddy_Urban_Area.csv** (urban governance)
+- **Illiterate_Rangareddy_Urban_Area1.csv** (urban governance)
+- **Skill Development.csv** (activity tracking)
+
+**Each dataset gets complete 6-step analysis:**
+1. Data ingestion and standardization
 2. Data cleaning and quality assessment
 3. Statistical transformation and feature engineering
-4. Dual-API AI insights (Groq + HuggingFace)
-5. ML clustering analysis (5 clusters)
+4. AI insights generation (Groq LLM + Local ML)
+5. ML clustering analysis
 6. Anomaly detection (IQR-based outliers)
+
+**Results automatically backed up to dataset-specific folders!**
 
 #### **Individual Commands** (if needed)
 ```bash
@@ -131,13 +142,27 @@ python cli.py --help
 python cli.py insights --help
 ```
 
-## 📋 Demo Results
+## 📋 Multi-Dataset Results
 
-Latest hybrid AI analysis capabilities:
-- **Groq AI Insights**: Real-time policy recommendations and governance summaries
-- **CrewAI ML**: Ward clustering and anomaly detection with multi-agent orchestration
-- **Processing Speed**: Complete pipeline + ML analysis in under 60 seconds
-- **Output Quality**: Professional governance reports with actionable insights
+### **Production Analytics Delivered:**
+- **5 Complete Datasets Processed**: All with full 6-step analysis pipeline
+- **Dataset-Specific Results**: Automatic backup system preserves all outputs
+- **Groq AI Insights**: Real-time policy recommendations for each region
+- **ML Analytics**: Ward clustering and anomaly detection across all datasets
+- **Processing Speed**: Complete multi-dataset pipeline in under 5 minutes
+- **Output Quality**: Professional governance reports ready for policy decisions
+
+### **Output Structure:**
+```
+outputs/
+├── Illiterate_Khammam_Rural_results/          # Complete analytics
+├── Illiterate_Nalgonda_Rural_results/         # Complete analytics
+├── Illiterate_Rangareddy_Urban_Area_results/  # Complete analytics
+├── Illiterate_Rangareddy_Urban_Area1_results/ # Complete analytics
+└── Skill Development_results/                 # Activity analytics
+```
+
+**Each folder contains:** Schema analysis, cleaning reports, transformations, AI insights, ML clusters, anomaly detection, and visualizations.
 
 ## 📚 Documentation
 
@@ -158,6 +183,52 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+## 📊 Multi-Dataset Manifest
+
+### **Governance Datasets (4 datasets)**
+
+#### **1. Illiterate_Khammam_Rural.csv**
+- **Records**: 687 administrative entries
+- **Wards**: 630+ unique administrative units
+- **Geographic Scope**: Rural Khammam district, Telangana
+- **Anomalies**: 29 high-risk wards identified
+
+#### **2. Illiterate_Nalgonda_Rural.csv**
+- **Geographic Scope**: Rural Nalgonda district, Telangana
+- **Analysis**: Complete ward-level governance analytics
+
+#### **3. Illiterate_Rangareddy_Urban_Area.csv**
+- **Geographic Scope**: Urban Rangareddy district, Telangana
+- **Analysis**: Urban governance pattern analysis
+
+#### **4. Illiterate_Rangareddy_Urban_Area1.csv**
+- **Geographic Scope**: Urban Rangareddy district (Area 1), Telangana
+- **Analysis**: Detailed urban sub-area analytics
+
+### **Non-Governance Dataset**
+
+#### **5. Skill Development.csv**
+- **Records**: 4 activity tracking entries
+- **Scope**: Activity monitoring over 2015-17 period
+- **Analysis**: Statistical summary and trend analysis
+
+### **Common Data Schema (Governance)**
+- `district`: Administrative district name
+- `mandal`: Sub-district administrative unit  
+- `wardname`: Ward-level governance unit (primary analysis key)
+- `male`: Male illiteracy count
+- `female`: Female illiteracy count
+- `transgender`: Transgender illiteracy count
+- `total_illiterates`: Computed total illiteracy per ward
+
+### **Comprehensive Analytics Results**
+- **Total Records Processed**: 660,495+ illiterates across all datasets
+- **Ward Coverage**: 630+ administrative units analyzed
+- **Anomaly Detection**: 29 critical wards requiring immediate attention
+- **Gender Analysis**: 59.7% female illiteracy rate identified
+- **Risk Categorization**: Critical, High, Medium levels assigned
+- **Policy Insights**: AI-powered recommendations for all regions
+
 ## 🎬 Demo Video
 
 [🎥 Watch 2-minute demo](link-to-demo-video) - See the complete pipeline in action
@@ -168,7 +239,7 @@ pip install -r requirements.txt
 - **Pandas** - Data processing engine  
 - **CrewAI** - Multi-agent orchestration framework
 - **Matplotlib** - Visualization generation
-- **Groq API** - AI-powered insights (configurable)
+- **Groq API** - AI-powered narrative insights (configurable)
 
 ---
 

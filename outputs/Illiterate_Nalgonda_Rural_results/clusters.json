@@ -1,0 +1,59 @@
+{
+  "status": "success",
+  "algorithm": "Simple K-Means",
+  "n_clusters": 5,
+  "total_wards_analyzed": 1180,
+  "cluster_summary": [
+    {
+      "cluster_id": 0,
+      "ward_count": 237,
+      "avg_illiterates": 1322,
+      "top_wards": [
+        "CHANDUPATLA",
+        "GUDUR"
+      ],
+      "risk_level": "medium"
+    },
+    {
+      "cluster_id": 1,
+      "ward_count": 46,
+      "avg_illiterates": 2681,
+      "top_wards": [
+        "MUKUNDAPURAM",
+        "MUKUNDAPURAM"
+      ],
+      "risk_level": "high"
+    },
+    {
+      "cluster_id": 2,
+      "ward_count": 409,
+      "avg_illiterates": 812,
+      "top_wards": [
+        "MARRIGUDA",
+        "PALLE PAHAD"
+      ],
+      "risk_level": "low"
+    },
+    {
+      "cluster_id": 3,
+      "ward_count": 383,
+      "avg_illiterates": 412,
+      "top_wards": [
+        "KONDAPUR",
+        "THIMMAPUR"
+      ],
+      "risk_level": "low"
+    },
+    {
+      "cluster_id": 4,
+      "ward_count": 105,
+      "avg_illiterates": 1933,
+      "top_wards": [
+        "SARVAIL",
+        "WARDHAMANU KOTA"
+      ],
+      "risk_level": "medium"
+    }
+  ],
+  "coefficient_of_variation": 63.71
+}

@@ -1,0 +1,59 @@
+{
+  "status": "success",
+  "algorithm": "Simple K-Means",
+  "n_clusters": 5,
+  "total_wards_analyzed": 91,
+  "cluster_summary": [
+    {
+      "cluster_id": 0,
+      "ward_count": 16,
+      "avg_illiterates": 546,
+      "top_wards": [
+        "Bandangpet-5",
+        "Bandangpet-4"
+      ],
+      "risk_level": "low"
+    },
+    {
+      "cluster_id": 1,
+      "ward_count": 26,
+      "avg_illiterates": 1446,
+      "top_wards": [
+        "Revenue Ward No  5",
+        "Revenue Ward No  5"
+      ],
+      "risk_level": "medium"
+    },
+    {
+      "cluster_id": 2,
+      "ward_count": 20,
+      "avg_illiterates": 847,
+      "top_wards": [
+        "Revenue Ward No.18",
+        "Revenue Ward No.6"
+      ],
+      "risk_level": "low"
+    },
+    {
+      "cluster_id": 3,
+      "ward_count": 5,
+      "avg_illiterates": 2199,
+      "top_wards": [
+        "Nadergul ",
+        "Revenue Ward No 2"
+      ],
+      "risk_level": "high"
+    },
+    {
+      "cluster_id": 4,
+      "ward_count": 24,
+      "avg_illiterates": 1131,
+      "top_wards": [
+        "Revenue Ward No.9",
+        "Revenue Ward No.3"
+      ],
+      "risk_level": "medium"
+    }
+  ],
+  "coefficient_of_variation": 39.79
+}

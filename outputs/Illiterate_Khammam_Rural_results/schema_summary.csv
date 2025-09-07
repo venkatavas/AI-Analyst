@@ -1,0 +1,7 @@
+column,dtype,non_null,null_count,unique_count
+district_,object,687,0,1
+mandal,object,687,0,43
+gp,object,687,0,630
+female,int64,687,0,503
+male,float64,686,1,447
+transgender,float64,492,195,14

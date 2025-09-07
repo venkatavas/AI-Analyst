@@ -71,15 +71,15 @@ import numpy as np
 
 def print_step(step, message):
     """Print a step with formatting."""
-    print(f"[→] {step}: {message}")
+    print(f"[>] {step}: {message}")
 
 def print_success(message):
     """Print a success message with formatting."""
-    print(f"[✓] {message}")
+    print(f"[+] {message}")
 
 def print_error(message):
     """Print an error message with formatting."""
-    print(f"[✗] ERROR: {message}")
+    print(f"[X] ERROR: {message}")
 
 def generate_text_chart(df, output_path):
     """Generate a simple text-based chart as fallback."""
@@ -91,7 +91,7 @@ def generate_text_chart(df, output_path):
             .nlargest(10, 'total_illiterates_by_ward')
         )
         
-        viz_text = "📊 Top 10 Wards by Illiteracy Count\n"
+        viz_text = "Top 10 Wards by Illiteracy Count\n"
         viz_text += "=" * 50 + "\n\n"
         
         for i, (_, row) in enumerate(top_wards.iterrows(), 1):
@@ -109,7 +109,7 @@ def generate_text_chart(df, output_path):
         print_success(f"Text-based chart saved: {text_path}")
         
     except Exception as e:
-        print(f"   📊 Text chart generation failed: {str(e)[:100]}...")
+        print(f"   Text chart generation failed: {str(e)[:100]}...")
 
 def generate_visualization(df, output_path):
     """Generate visualization with robust fallback to text-based charts."""
@@ -155,17 +155,17 @@ def generate_visualization(df, output_path):
                     fig.write_image(str(output_path))
                     print_success(f"Static visualization saved: {output_path}")
                 except Exception as e:
-                    print(f"   📊 PNG export failed (install kaleido): {e}")
+                    print(f"   PNG export failed (install kaleido): {e}")
                     
             except (ImportError, KeyboardInterrupt, Exception) as e:
-                print(f"   📊 Plotly error ({type(e).__name__}), using text fallback")
+                print(f"   Plotly error ({type(e).__name__}), using text fallback")
                 generate_text_chart(df, output_path)
         else:
             # Fallback to text-based visualization
             generate_text_chart(df, output_path)
             
     except Exception as e:
-        print(f"   📊 Visualization error: {str(e)[:100]}...")
+        print(f"   Visualization error: {str(e)[:100]}...")
         generate_text_chart(df, output_path)
 
 def generate_ai_summary_with_groq(df, summary_stats):
@@ -178,15 +178,41 @@ def generate_ai_summary_with_groq(df, summary_stats):
         return "## 📖 Narrative Insights (Local)\n\nGroq API key not found in environment variables."
     
     try:
-        client = Groq(api_key=api_key)
+        # Add timeout and better error handling
+        import socket
+        socket.setdefaulttimeout(10)  # 10 second timeout
         
-        # Prepare context from the data
-        top_wards = df.groupby('wardname')['total_illiterates_by_ward'].first().nlargest(5)
-        gender_stats = df.groupby('wardname').agg({'male': 'sum', 'female': 'sum'}).reset_index()
-        gender_stats['female_ratio'] = gender_stats['female'] / (gender_stats['male'] + gender_stats['female'])
-        high_female_wards = gender_stats[gender_stats['female_ratio'] > 0.6]['wardname'].tolist()
+        client = Groq(api_key=api_key, timeout=10.0)
         
-        prompt = f"""Based on this illiteracy data analysis:
+        # Check if this is governance data before accessing ward columns
+        if 'wardname' not in df.columns:
+            # For non-governance data, create simple summary
+            numeric_cols = df.select_dtypes(include=['number']).columns
+            data_summary = f"Dataset with {len(df)} records and {len(numeric_cols)} numeric columns"
+            if len(numeric_cols) > 0:
+                total_values = df[numeric_cols].sum().sum()
+                data_summary += f". Total numeric values: {total_values}"
+            
+            prompt = f"""Based on this general dataset analysis:
+{data_summary}
+
+Column information: {list(df.columns)}
+Summary Statistics: {summary_stats}
+
+Write a brief narrative insight about this data, focusing on:
+1. Overall data characteristics
+2. Key patterns or trends visible
+3. Potential applications or insights
+
+Keep it concise and professional."""
+        else:
+            # Prepare context from governance data
+            top_wards = df.groupby('wardname')['total_illiterates_by_ward'].first().nlargest(5)
+            gender_stats = df.groupby('wardname').agg({'male': 'sum', 'female': 'sum'}).reset_index()
+            gender_stats['female_ratio'] = gender_stats['female'] / (gender_stats['male'] + gender_stats['female'])
+            high_female_wards = gender_stats[gender_stats['female_ratio'] > 0.6]['wardname'].tolist()
+            
+            prompt = f"""Based on this illiteracy data analysis:
 
 Summary Statistics: {summary_stats}
 
@@ -196,7 +222,9 @@ Top 5 wards with highest illiteracy:
 Wards with high female illiteracy (>60%): {', '.join(high_female_wards[:3]) if high_female_wards else 'None identified'}
 
 Write narrative insights that include:
-1. A compelling opening statement about the overall situation
+1. A compelling opening statement about the overall situation"""
+        
+            prompt += """
 2. Specific examples with ward names and numbers (like "Ward X has the highest illiteracy at Y%")
 3. Gender-specific observations and trends
 4. Geographic or demographic patterns you notice
@@ -205,7 +233,7 @@ Write narrative insights that include:
 Use storytelling techniques. Make it engaging and accessible to policymakers. Include specific numbers and ward names for credibility. Keep under 400 words."""
 
         response = client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": "You are an expert policy analyst who excels at turning data into compelling human stories that drive policy action."},
                 {"role": "user", "content": prompt}
@@ -216,8 +244,49 @@ Use storytelling techniques. Make it engaging and accessible to policymakers. In
         
         return f"## 📖 Narrative Insights (Groq LLM)\n\n{response.choices[0].message.content}"
         
-    except Exception as e:
-        return f"## 📖 Narrative Insights (Error)\n\nGroq API error: {str(e)[:100]}..."
+    except (Exception, KeyboardInterrupt) as e:
+        # Fallback to local analysis when Groq fails
+        print(f"[!] Groq API failed ({str(e)[:50]}...), using local analysis")
+        return generate_local_fallback_insights(df)
+
+def generate_local_fallback_insights(df):
+    """Generate local narrative insights when Groq API fails."""
+    if 'wardname' in df.columns:
+        # Governance data fallback
+        total_illiterates = int(df['total_illiterates'].sum())
+        top_ward = df.groupby('wardname')['total_illiterates_by_ward'].first().idxmax()
+        top_count = int(df.groupby('wardname')['total_illiterates_by_ward'].first().max())
+        
+        return f"""## 📖 Narrative Insights (Local Analysis)
+
+**Key Findings from Governance Data:**
+
+The analysis reveals {total_illiterates:,} total illiterates across {df['wardname'].nunique()} wards. The ward with highest illiteracy is **{top_ward}** with {top_count:,} illiterates.
+
+**Gender Analysis:** Female illiteracy ({int(df['female'].sum()):,}) {'exceeds' if df['female'].sum() > df['male'].sum() else 'is lower than'} male illiteracy ({int(df['male'].sum()):,}).
+
+**Policy Recommendations:**
+- Focus intervention programs on high-burden wards
+- Implement gender-specific literacy initiatives
+- Establish community-based education centers in affected areas"""
+    else:
+        # General data fallback
+        numeric_cols = df.select_dtypes(include=['number']).columns
+        return f"""## 📖 Narrative Insights (Local Analysis)
+
+**Dataset Overview:**
+
+This dataset contains {len(df)} records with {len(df.columns)} columns, including {len(numeric_cols)} numeric fields.
+
+**Key Characteristics:**
+- Total records analyzed: {len(df)}
+- Data completeness: {(df.count().sum() / (len(df) * len(df.columns)) * 100):.1f}%
+- Numeric data available for trend analysis
+
+**Applications:**
+- Suitable for statistical analysis and reporting
+- Can support decision-making processes
+- Enables performance tracking over time"""
 
 def generate_huggingface_analysis(df, summary_stats):
     """Generate mathematical analysis using Hugging Face API with improved error handling."""
@@ -230,6 +299,10 @@ def generate_huggingface_analysis(df, summary_stats):
         return generate_local_mathematical_analysis(df)
     
     try:
+        # Check if this is governance data before accessing ward columns
+        if 'wardname' not in df.columns:
+            return generate_local_mathematical_analysis(df)
+            
         # Prepare statistical data for analysis
         ward_stats = df.groupby('wardname').agg({
             'male': 'sum',
@@ -379,7 +452,7 @@ def ingest(args):
     
     if result['status'] == 'success':
         print_success(f"Ingestion completed: {result['output_file']}")
-        print(f"   📊 Schema: {result['schema_summary']}")
+        print(f"   Schema: {result['schema_summary']}")
     else:
         print_error(f"Ingestion failed: {result['message']}")
         sys.exit(1)
@@ -399,7 +472,7 @@ def clean(args):
     
     if result['status'] == 'success':
         print_success(f"Cleaning completed: {result['output_file']}")
-        print(f"   📊 Report: {result['report_file']}")
+        print(f"   Report: {result['report_file']}")
     else:
         print_error(f"Cleaning failed: {result['message']}")
         sys.exit(1)
@@ -489,9 +562,9 @@ def cluster(args):
     
     # Perform clustering
     ml_agent = SimpleMlAgent()
-    data_dict = {"main_data": df}
+    data_list = df.to_dict('records')
     
-    result = ml_agent.perform_clustering_analysis(data_dict)
+    result = ml_agent.perform_clustering_analysis(data_list)
     
     if result and result.get('status') == 'success':
         # Save clustering results
@@ -502,9 +575,15 @@ def cluster(args):
             json.dump(result, f, indent=2)
         
         print_success(f"Clustering completed: {output_path}")
-        print(f"   📊 Found {len(result.get('cluster_summary', []))} clusters")
     else:
-        print_error(f"Clustering failed: {result.get('message', 'Unknown error')}")
+        error_msg = result.get('message', 'Unknown error')
+        if 'traceback' in result:
+            print_error(f"Clustering failed: {error_msg}")
+            print("Full traceback:")
+            print(result['traceback'])
+        else:
+            print_error(f"Clustering failed: {error_msg}")
+        sys.exit(1)
 
 def anomalies(args):
     """Detect anomalous wards using ML."""
@@ -539,7 +618,7 @@ def anomalies(args):
             json.dump(result, f, indent=2)
         
         print_success(f"Anomaly detection completed: {output_path}")
-        print(f"   📊 Found {len(result.get('anomalies', []))} anomalies")
+        print(f"   Found {len(result.get('anomalies', []))} anomalies")
     else:
         print_error(f"Anomaly detection failed: {result.get('message', 'Unknown error')}")
 
@@ -549,7 +628,7 @@ def run_pipeline(args):
     skip_ml = getattr(args, 'skip_ml', False)
     
     print("=" * 50)
-    print("🚀 RTGS CLI - Complete Pipeline Execution")
+    print("RTGS CLI - Complete Pipeline Execution")
     print("=" * 50)
     print("Production-Ready Governance Analytics")
     print("Dual-API AI Integration + ML Analytics")
@@ -616,30 +695,29 @@ def run_pipeline(args):
             print_error("Pipeline failed at anomaly detection step")
             return
     elif skip_ml:
-        print("   📊 ML analytics skipped (--skip-ml flag)")
+        print("   ML analytics skipped (--skip-ml flag)")
     else:
-        print("   📊 ML analytics skipped (SimpleMlAgent not available)")
+        print("   ML analytics skipped (SimpleMlAgent not available)")
     
     # Success summary
     print()
     print("=" * 50)
     print("[✓] Complete Pipeline Execution Finished!")
     print("=" * 50)
-    print("📊 Analytics Results Generated:")
-    print("   📄 Schema Analysis: outputs/schema_summary.json")
-    print("   🧹 Data Quality: outputs/cleaning_report.json")
-    print("   🔄 Transformations: outputs/transformation_report.json")
-    print("   🤖 Dual-API Insights: outputs/insights_report.md")
-    if not skip_ml and ML_AGENT_AVAILABLE:
-        print("   🎯 ML Clusters: outputs/clusters.json")
-        print("   🚨 Anomalies: outputs/anomalies.json")
-    print("   📈 Visualizations: outputs/trend.png")
+    print("Analytics Results Generated:")
+    print("   Schema Analysis: outputs/schema_summary.json")
+    print("   Data Quality: outputs/cleaning_report.json")
+    print("   Transformations: outputs/transformation_report.json")
+    print("   AI Insights: outputs/insights_report.md")
+    print("   ML Clusters: outputs/clusters.json")
+    print("   Anomalies: outputs/anomalies.json")
+    print("   Visualizations: outputs/trend.png")
     print()
-    print("🎉 Production-ready governance analytics complete!")
-    print("📊 Complete data pipeline executed successfully")
-    print("🤖 Dual-API AI analysis (Groq + HuggingFace)")
+    print("Production-ready governance analytics complete!")
+    print("Complete data pipeline executed successfully")
+    print("Dual-API AI analysis (Groq + HuggingFace)")
     if not skip_ml and ML_AGENT_AVAILABLE:
-        print("🎯 ML analytics completed (clustering + anomaly detection)")
+        print("ML analytics completed (clustering + anomaly detection)")
     print()
 
 def main():

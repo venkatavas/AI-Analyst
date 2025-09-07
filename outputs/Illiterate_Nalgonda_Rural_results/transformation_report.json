@@ -1,0 +1,39 @@
+{
+  "dataset_name": "Illiterate_Khammam_Rural_standardized_cleaned.csv",
+  "total_illiterates": 660495,
+  "aggregations": {
+    "by_gender": {
+      "male": 266410,
+      "female": 394085
+    },
+    "top_wards": [
+      {
+        "ward": "JAGANNADHAPURAM",
+        "illiterates": 3798
+      },
+      {
+        "ward": "GANGARAM",
+        "illiterates": 3762
+      },
+      {
+        "ward": "CHALLA SAMUDRAM",
+        "illiterates": 3323
+      },
+      {
+        "ward": "MORAMPALLE",
+        "illiterates": 3308
+      },
+      {
+        "ward": "MALLARAM",
+        "illiterates": 3295
+      }
+    ]
+  },
+  "transformed_columns": [
+    "total_illiterates_by_ward",
+    "percentage_male",
+    "percentage_female",
+    "rank_by_illiterates"
+  ],
+  "notes": "Dataset transformed successfully. Found 660495 total illiterates across 630 wards."
+}

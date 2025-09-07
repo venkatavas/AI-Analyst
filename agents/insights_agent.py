@@ -9,6 +9,25 @@ import pandas as pd
 class InsightsAgent:
     def generate_insights_report(self, df: pd.DataFrame) -> str:
         """Generate a Markdown report from the transformed DataFrame."""
+        
+        # Check if this is governance data or general data
+        if self._is_governance_dataset(df):
+            return self._generate_governance_insights(df)
+        else:
+            return self._generate_general_insights(df)
+    
+    def _is_governance_dataset(self, df: pd.DataFrame) -> bool:
+        """Check if dataset has governance structure (ward-based)."""
+        ward_cols = ['wardname', 'gp', 'ward_name', 'ward']
+        demographic_cols = ['male', 'female', 'total_illiterates']
+        
+        has_ward = any(col in df.columns for col in ward_cols)
+        has_demographics = any(col in df.columns for col in demographic_cols)
+        
+        return has_ward and has_demographics
+    
+    def _generate_governance_insights(self, df: pd.DataFrame) -> str:
+        """Generate insights for governance datasets."""
         # 1. Extract key metrics
         total_illiterates = int(df['total_illiterates'].sum())
         male_illiterates = int(df['male'].sum())
@@ -63,6 +82,68 @@ Based on the analysis, we recommend the following actions:
 1.  **Targeted Intervention in High-Prevalence Wards:** Focus literacy programs and resources on the top 3 wards identified, as they represent the most significant concentration of illiteracy.
 2.  **Gender-Specific Programs:** Develop and promote literacy initiatives specifically designed to address the gender disparity observed. If female illiteracy is higher, programs could include flexible timings and childcare support.
 3.  **Community-Based Awareness Campaigns:** Launch awareness campaigns in the most affected areas to encourage participation in literacy programs and highlight the benefits of education.
+
+"""
+        return report
+    
+    def _generate_general_insights(self, df: pd.DataFrame) -> str:
+        """Generate insights for general datasets (non-governance)."""
+        # Get numeric columns
+        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+        
+        # Basic statistics
+        total_records = len(df)
+        
+        report = f"""# General Dataset Insights Report
+
+## 1. Executive Summary
+
+This report analyzes a general dataset with {total_records} records and {len(df.columns)} columns.
+
+## 2. Dataset Overview
+
+- **Total Records:** {total_records}
+- **Columns:** {len(df.columns)}
+- **Numeric Columns:** {len(numeric_cols)}
+
+### Column Analysis:
+
+| Column | Type | Records |
+|--------|------|---------|
+"""
+        
+        for col in df.columns:
+            col_type = str(df[col].dtype)
+            non_null = df[col].count()
+            report += f"| {col} | {col_type} | {non_null} |\n"
+        
+        # Add numeric analysis if available
+        if numeric_cols:
+            report += f"""
+
+## 3. Numeric Analysis
+
+"""
+            for col in numeric_cols:
+                if df[col].sum() > 0:  # Only analyze columns with data
+                    mean_val = df[col].mean()
+                    max_val = df[col].max()
+                    min_val = df[col].min()
+                    
+                    report += f"""### {col}
+- **Mean:** {mean_val:.2f}
+- **Range:** {min_val} to {max_val}
+- **Total:** {df[col].sum()}
+
+"""
+        
+        report += """## 4. Recommendations
+
+Based on the dataset structure:
+
+1. **Data Quality:** Ensure all numeric fields are properly validated
+2. **Analysis Scope:** Consider time-series analysis if temporal data is available
+3. **Reporting:** Regular monitoring of key metrics for trend analysis
 
 """
         return report

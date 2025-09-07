@@ -1,0 +1,48 @@
+{
+  "total_rows": 91,
+  "total_columns": 7,
+  "columns": {
+    "district_": {
+      "dtype": "object",
+      "non_null": 91,
+      "null_count": 0,
+      "unique_count": 1
+    },
+    "mandal": {
+      "dtype": "object",
+      "non_null": 91,
+      "null_count": 0,
+      "unique_count": 6
+    },
+    "muncipality": {
+      "dtype": "object",
+      "non_null": 91,
+      "null_count": 0,
+      "unique_count": 6
+    },
+    "wardname": {
+      "dtype": "object",
+      "non_null": 91,
+      "null_count": 0,
+      "unique_count": 47
+    },
+    "female": {
+      "dtype": "int64",
+      "non_null": 91,
+      "null_count": 0,
+      "unique_count": 87
+    },
+    "male": {
+      "dtype": "int64",
+      "non_null": 91,
+      "null_count": 0,
+      "unique_count": 81
+    },
+    "transgender": {
+      "dtype": "float64",
+      "non_null": 48,
+      "null_count": 43,
+      "unique_count": 9
+    }
+  }
+}

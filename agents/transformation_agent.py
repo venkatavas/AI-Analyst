@@ -6,6 +6,25 @@ import pandas as pd
 class TransformationAgent:
     def transform_data(self, df: pd.DataFrame, file_name: str) -> (pd.DataFrame, dict):
         """Transform the input DataFrame with necessary feature engineering."""
+        
+        # Detect dataset type and handle accordingly
+        if self._is_governance_dataset(df):
+            return self._transform_governance_data(df, file_name)
+        else:
+            return self._transform_general_data(df, file_name)
+    
+    def _is_governance_dataset(self, df: pd.DataFrame) -> bool:
+        """Check if dataset has governance structure (ward-based)."""
+        ward_cols = ['wardname', 'gp', 'ward_name', 'ward']
+        demographic_cols = ['male', 'female']
+        
+        has_ward = any(col in df.columns for col in ward_cols)
+        has_demographics = any(col in df.columns for col in demographic_cols)
+        
+        return has_ward and has_demographics
+    
+    def _transform_governance_data(self, df: pd.DataFrame, file_name: str) -> (pd.DataFrame, dict):
+        """Transform governance datasets with ward-level data."""
         # Handle different ward name columns
         ward_col = None
         for col in ['wardname', 'gp', 'ward_name', 'ward']:
@@ -27,6 +46,36 @@ class TransformationAgent:
             raise ValueError(f"Missing required columns: {missing_cols}")
 
         df[['male', 'female']] = df[['male', 'female']].apply(pd.to_numeric, errors='coerce').fillna(0)
+        
+        return self._complete_governance_transformation(df, file_name)
+    
+    def _transform_general_data(self, df: pd.DataFrame, file_name: str) -> (pd.DataFrame, dict):
+        """Transform non-governance datasets (like Skill Development)."""
+        print(f"[i] Processing non-governance dataset: {file_name}")
+        
+        # For general datasets, create basic transformations
+        # Convert all numeric columns to proper numeric types
+        for col in df.columns:
+            if col not in ['Activity']:  # Skip text columns
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+        
+        # Create summary statistics
+        numeric_cols = df.select_dtypes(include=['number']).columns
+        
+        transformation_report = {
+            'dataset_type': 'general',
+            'original_columns': list(df.columns),
+            'numeric_columns': list(numeric_cols),
+            'total_records': len(df),
+            'transformations_applied': [
+                'Numeric type conversion',
+                'Missing value handling'
+            ]
+        }
+        
+        return df, transformation_report
+    
+    def _complete_governance_transformation(self, df: pd.DataFrame, file_name: str) -> (pd.DataFrame, dict):
 
         # 1. Aggregate total illiterates per ward
         df['total_illiterates'] = df['male'] + df['female']
@@ -41,7 +90,7 @@ class TransformationAgent:
         df['rank_by_illiterates'] = df['total_illiterates_by_ward'].rank(method='dense', ascending=False).astype(int)
 
         # Skip visualization to avoid rendering issues
-        print("   📊 Visualization skipped (disabled for compatibility)")
+        print("   Visualization skipped (disabled for compatibility)")
 
         # 4. Generate JSON report
         total_illiterates_overall = int(df['total_illiterates'].sum())

@@ -1,0 +1,59 @@
+{
+  "status": "success",
+  "algorithm": "Simple K-Means",
+  "n_clusters": 5,
+  "total_wards_analyzed": 687,
+  "cluster_summary": [
+    {
+      "cluster_id": 0,
+      "ward_count": 50,
+      "avg_illiterates": 1805,
+      "top_wards": [
+        "MARRIGUDEM",
+        "MARRIGUDEM"
+      ],
+      "risk_level": "medium"
+    },
+    {
+      "cluster_id": 1,
+      "ward_count": 104,
+      "avg_illiterates": 1803,
+      "top_wards": [
+        "MUDIGONDA",
+        "GUNDALA"
+      ],
+      "risk_level": "medium"
+    },
+    {
+      "cluster_id": 2,
+      "ward_count": 40,
+      "avg_illiterates": 3063,
+      "top_wards": [
+        "JAGANNADHAPURAM",
+        "JAGANNADHAPURAM"
+      ],
+      "risk_level": "high"
+    },
+    {
+      "cluster_id": 3,
+      "ward_count": 246,
+      "avg_illiterates": 513,
+      "top_wards": [
+        "TELAGARAM",
+        "LINGALA"
+      ],
+      "risk_level": "low"
+    },
+    {
+      "cluster_id": 4,
+      "ward_count": 247,
+      "avg_illiterates": 1027,
+      "top_wards": [
+        "VENKATAGIRI",
+        "CHAPARALAPALLI"
+      ],
+      "risk_level": "medium"
+    }
+  ],
+  "coefficient_of_variation": 62.63
+}

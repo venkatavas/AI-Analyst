@@ -1,0 +1,11 @@
+{
+  "duplicates_removed": 0,
+  "missing_values_filled": {
+    "transgender": 43
+  },
+  "outliers_replaced": {
+    "female": 2,
+    "male": 3,
+    "transgender": 3
+  }
+}

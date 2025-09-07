@@ -144,19 +144,37 @@ class SimpleMlAgent:
             }
 
     def perform_clustering_analysis(self, data: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Perform simple K-means clustering on ward data."""
+        """Perform simple K-means clustering on data."""
         try:
             # Convert to DataFrame for easier processing
             df = pd.DataFrame(data)
             
-            if 'total_illiterates_by_ward' not in df.columns:
+            # Check if this is governance data (ward-based) or general data
+            if 'total_illiterates_by_ward' in df.columns:
+                return self._cluster_governance_data(df)
+            else:
+                return self._cluster_general_data(df)
+        except Exception as e:
+            return {
+                'status': 'error',
+                'message': f"Clustering analysis failed: {str(e)}"
+            }
+    
+    def _cluster_governance_data(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """Cluster governance datasets with ward-level data."""
+        try:
+            # Use multiple features for clustering
+            feature_cols = ['male', 'female', 'total_illiterates_by_ward']
+            available_cols = [col for col in feature_cols if col in df.columns]
+            
+            if not available_cols:
                 return {
                     'status': 'error',
-                    'message': 'Required column total_illiterates_by_ward not found'
+                    'message': 'No suitable columns found for clustering'
                 }
             
-            # Use total_illiterates_by_ward as primary feature for clustering
-            features = df[['total_illiterates_by_ward']].values.tolist()
+            # Extract features and convert to list of lists
+            features = df[available_cols].values.tolist()
             
             # Perform k-means clustering (k=5)
             k = 5
@@ -165,10 +183,18 @@ class SimpleMlAgent:
             # Analyze clusters
             cluster_summary = {}
             for i in range(k):
-                cluster_wards = df[df.index.isin([j for j, assignment in enumerate(assignments) if assignment == i])]
-                if len(cluster_wards) > 0:
+                cluster_indices = [j for j, assignment in enumerate(assignments) if assignment == i]
+                if cluster_indices:
+                    cluster_wards = df.iloc[cluster_indices]
                     avg_illiterates = cluster_wards['total_illiterates_by_ward'].mean()
-                    top_wards = cluster_wards.nlargest(2, 'total_illiterates_by_ward')['wardname'].tolist() if 'wardname' in cluster_wards.columns else ['Unknown']
+                    
+                    # Get top wards safely
+                    if 'wardname' in cluster_wards.columns and len(cluster_wards) > 0:
+                        # Sort by total_illiterates_by_ward and get top wards
+                        sorted_wards = cluster_wards.sort_values('total_illiterates_by_ward', ascending=False)
+                        top_wards = sorted_wards['wardname'].head(3).tolist()
+                    else:
+                        top_wards = ['Unknown']
                     
                     cluster_summary[f'cluster_{i+1}'] = {
                         'wards': len(cluster_wards),
@@ -182,71 +208,64 @@ class SimpleMlAgent:
             
             return {
                 'status': 'success',
-                'summary': {
-                    'total_wards': len(df),
-                    'clusters_identified': k,
-                    'algorithm': 'k-means',
-                    'coefficient_of_variation': round(cv, 1)
-                },
-                'clusters': cluster_summary
+                'algorithm': 'Simple K-Means',
+                'n_clusters': k,
+                'total_wards_analyzed': len(df),
+                'cluster_summary': [
+                    {
+                        'cluster_id': i,
+                        'ward_count': cluster_summary[f'cluster_{i+1}']['wards'],
+                        'avg_illiterates': cluster_summary[f'cluster_{i+1}']['avg_illiterates'],
+                        'top_wards': cluster_summary[f'cluster_{i+1}']['top_wards'],
+                        'risk_level': cluster_summary[f'cluster_{i+1}']['risk_level']
+                    } for i in range(k) if f'cluster_{i+1}' in cluster_summary
+                ],
+                'coefficient_of_variation': round(cv, 2)
             }
-            
         except Exception as e:
             return {
                 'status': 'error',
-                'message': f"Clustering analysis failed: {str(e)}"
+                'message': f"Governance clustering failed: {str(e)}"
             }
-            features = df[available_cols].fillna(0)
+    
+    def _cluster_general_data(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """Cluster general datasets (non-governance data like Skill Development)."""
+        try:
+            # For general datasets, perform basic statistical analysis instead of clustering
+            numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
             
-            # Normalize features (simple min-max scaling)
-            normalized_features = []
-            for col in available_cols:
-                col_data = features[col]
-                min_val, max_val = col_data.min(), col_data.max()
-                if max_val > min_val:
-                    normalized = [(x - min_val) / (max_val - min_val) for x in col_data]
-                else:
-                    normalized = [0.5] * len(col_data)
-                normalized_features.append(normalized)
+            if not numeric_cols:
+                return {
+                    'status': 'success',
+                    'message': 'No numeric columns found for clustering - performed basic analysis',
+                    'analysis_type': 'statistical_summary',
+                    'columns_analyzed': list(df.columns),
+                    'total_records': len(df)
+                }
             
-            # Convert to list of points
-            data_points = list(zip(*normalized_features))
-            
-            # Perform clustering
-            n_clusters = min(5, len(df) // 10)
-            if n_clusters < 2:
-                n_clusters = 2
-            
-            cluster_assignments, centroids = self.simple_kmeans(data_points, n_clusters)
-            
-            # Add cluster labels to dataframe
-            df_clustered = df.copy()
-            df_clustered['cluster'] = cluster_assignments
-            
-            # Generate cluster summary
-            cluster_summary = []
-            for i in range(n_clusters):
-                cluster_data = df_clustered[df_clustered['cluster'] == i]
-                if len(cluster_data) > 0:
-                    summary = {
-                        "cluster_id": int(i),
-                        "ward_count": len(cluster_data),
-                        "avg_illiterates": float(cluster_data['total_illiterates_by_ward'].mean()),
-                        "top_wards": cluster_data.nlargest(3, 'total_illiterates_by_ward')['wardname'].tolist()
-                    }
-                    cluster_summary.append(summary)
+            # Create statistical summary
+            stats_summary = {}
+            for col in numeric_cols:
+                stats_summary[col] = {
+                    'mean': float(df[col].mean()),
+                    'std': float(df[col].std()),
+                    'min': float(df[col].min()),
+                    'max': float(df[col].max())
+                }
             
             return {
-                "status": "success",
-                "algorithm": "Simple K-Means",
-                "n_clusters": len(cluster_summary),
-                "total_wards_analyzed": len(df),
-                "cluster_summary": cluster_summary,
-                "features_used": available_cols
+                'status': 'success',
+                'analysis_type': 'statistical_summary',
+                'message': 'General dataset analyzed - clustering not applicable',
+                'columns_analyzed': numeric_cols,
+                'total_records': len(df),
+                'statistical_summary': stats_summary
             }
-            
         except Exception as e:
-            return {"error": f"Clustering analysis failed: {str(e)}"}
+            return {
+                'status': 'error',
+                'message': f"General data analysis failed: {str(e)}"
+            }
     
     def simple_outlier_detection(self, data, threshold_factor=2.0):
         """Simple outlier detection using statistical methods."""

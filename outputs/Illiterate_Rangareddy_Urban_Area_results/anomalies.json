@@ -1,0 +1,29 @@
+{
+  "status": "success",
+  "summary": {
+    "total_outliers": 3,
+    "detection_method": "IQR",
+    "threshold": 2145,
+    "mean_deviation": "+120%"
+  },
+  "anomalies": [
+    {
+      "ward": "Nadergul ",
+      "illiterates": 2653,
+      "deviation_percent": "+138%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "Revenue Ward No  8",
+      "illiterates": 2326,
+      "deviation_percent": "+109%",
+      "risk_category": "high"
+    },
+    {
+      "ward": "Revenue Ward No 2",
+      "illiterates": 2374,
+      "deviation_percent": "+113%",
+      "risk_category": "high"
+    }
+  ]
+}

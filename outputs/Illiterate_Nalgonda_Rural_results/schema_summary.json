@@ -1,0 +1,42 @@
+{
+  "total_rows": 1180,
+  "total_columns": 6,
+  "columns": {
+    "district_": {
+      "dtype": "object",
+      "non_null": 1180,
+      "null_count": 0,
+      "unique_count": 1
+    },
+    "mandal": {
+      "dtype": "object",
+      "non_null": 1180,
+      "null_count": 0,
+      "unique_count": 59
+    },
+    "gp": {
+      "dtype": "object",
+      "non_null": 1180,
+      "null_count": 0,
+      "unique_count": 1107
+    },
+    "female": {
+      "dtype": "int64",
+      "non_null": 1180,
+      "null_count": 0,
+      "unique_count": 706
+    },
+    "male": {
+      "dtype": "int64",
+      "non_null": 1180,
+      "null_count": 0,
+      "unique_count": 549
+    },
+    "transgender": {
+      "dtype": "float64",
+      "non_null": 743,
+      "null_count": 437,
+      "unique_count": 14
+    }
+  }
+}
