@@ -1,3 +1,8 @@
+## 🎬 Demo Video
+
+[🎥 Watch 2-minute demo](https://drive.google.com/file/d/1EKN5gNk23aHWbroDuWQn9n8I7mXdUm01/view?usp=drivesdk) - See the complete pipeline in action
+
+
 # 🏛️ RTGS CLI - Real-Time Governance System
 
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green)](https://github.com/your-repo)
@@ -229,9 +234,6 @@ pip install -r requirements.txt
 - **Risk Categorization**: Critical, High, Medium levels assigned
 - **Policy Insights**: AI-powered recommendations for all regions
 
-## 🎬 Demo Video
-
-[🎥 Watch 2-minute demo](link-to-demo-video) - See the complete pipeline in action
 
 ## 🏗️ Built With
 
